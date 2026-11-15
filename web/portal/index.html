@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="按会议与年份浏览 AI 论文、摘要和审稿评分。">
+  <title>PaperReading</title>
+  <link rel="stylesheet" href="/library.css">
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/" aria-label="PaperReading 首页"><span class="brand-icon" aria-hidden="true">P<span>r</span></span>PaperReading</a><span class="topbar-label">你的论文阅读入口</span></header>
+  <main>
+    <section class="intro"><div class="eyebrow"><span></span> PAPER LIBRARY</div><h1>从一个问题，<br>读到一篇好论文。</h1><p>按会议与年份探索论文，查看摘要、审稿评分与分数分布。<br class="desktop-break">让下一篇阅读，有迹可循。</p></section>
+    <section class="library" aria-labelledby="library-title"><div class="section-heading"><h2 id="library-title">会议论文库</h2><span>先选会议，再选年份</span></div>
+      <article class="conference"><div class="conference-header"><div><span class="conference-tag">表示学习 · 深度学习</span><h2>ICLR</h2><p>International Conference on Learning Representations</p></div><span class="availability"><span></span>已收录 2 个年份</span></div>
+        <div class="year-grid">__YEAR_CARDS__</div>
+        <p class="conference-note">各年份使用原始评分尺度；2027 按精确均分展示，2026 按 0.5 分分档。投稿状态与录用结果请以对应年份标注为准。</p>
+      </article>
+      <div class="upcoming" aria-label="待收录会议"><span>后续论文库</span><span>NeurIPS <small>待收录</small></span><span>CVPR <small>待收录</small></span><span>ICML <small>待收录</small></span></div>
+    </section>
+    <footer><span>PaperReading</span><p>当前数据来自 Paper Copilot 公开镜像；尚未确认官方全量覆盖。<br>论文详情页提供 OpenReview 和 PDF 原文链接。</p></footer>
+  </main>
+</body>
+</html>
