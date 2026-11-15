@@ -1,0 +1,43 @@
+"""Verify author keywords survive the web build and its search index exactly."""
+import json
+import sqlite3
+import unittest
+from pathlib import Path
+
+from scripts.paper_keywords import keyword_search_text
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class KeywordTests(unittest.TestCase):
+    def test_normalization_preserves_partial_search_terms(self):
+        self.assertEqual(keyword_search_text(" ＤＩＦＦＵＳＩＯＮ; Multi-Agent_learning "), "diffusion multi agent learning")
+        self.assertEqual(keyword_search_text("Straße; 图像恢复"), "strasse 图像恢复")
+        self.assertEqual(keyword_search_text("%_'"), "")
+        self.assertEqual(keyword_search_text(None), "")
+
+    def test_every_paper_retains_source_keywords_and_normalized_search(self):
+        for year in [2026, 2027]:
+            with self.subTest(year=year):
+                folder = ROOT / f"web/dist/iclr/{year}"
+                build = json.loads((folder / "data-app-build.json").read_text())
+                snapshot = json.loads((folder / build["snapshot"]["path"]).read_text())
+                rows = snapshot["queries"]["papers"]["rows"]
+                raw = json.loads((ROOT / f"iclr{year}/raw/papercopilot.json").read_bytes())
+                keywords = {row.get("openreview_forum") or row["id"]: row.get("keywords") or "" for row in raw}
+                del raw
+                database = sqlite3.connect(ROOT / "web/dist" / snapshot["iclr"]["detailBase"].lstrip("/") / "_search.sqlite3")
+                try:
+                    indexed = {row[0]: row[1:] for row in database.execute("SELECT id, keywords, keyword_search, title_search FROM papers")}
+                finally:
+                    database.close()
+                self.assertEqual(len(indexed), len(rows))
+                for row in rows:
+                    self.assertNotIn("keywords", row, "Keywords must stay out of the initial payload")
+                    original = keywords[row["id"]]
+                    self.assertTrue(original, row["id"])
+                    self.assertEqual(indexed[row["id"]], (original, keyword_search_text(original), keyword_search_text(row["title"])), row["id"])
+
+
+if __name__ == "__main__":
+    unittest.main()
