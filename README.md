@@ -1,5 +1,7 @@
 # PaperReading
 
+需要用户登录或网页验证时，可使用[当前机器的持久浏览器](docs/browser-session.md)：运行 `python scripts/browser_session.py start`，从现有网站端口进入返回的私有路径。用户与 agent 操作同一个浏览器，登录状态可保留。
+
 Git 保存应用源码、测试、数据来源记录和校验报告。原始下载、论文 CSV/JSONL、审稿 CSV、构建产物及运行缓存保留在本地，不纳入提交。新检出目录需先按下文同步两个年份的数据，再构建网站；历史快照的来源 URL 和 SHA-256 记录在各年份的 `raw/papercopilot_source.json` 中。
 
 论文库监听 `0.0.0.0:8000`，按会议和年份进入，当前提供 **ICLR 2026、2027**。

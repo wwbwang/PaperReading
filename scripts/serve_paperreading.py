@@ -18,17 +18,31 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from scripts.review_text import retrieve
 from scripts.paper_keywords import keyword_search_text
+from scripts.browser_viewer import proxy_browser
 
 
 class DashboardHandler(SimpleHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
+
+    def log_request(self, code="-", size="-"):
+        if urlsplit(self.path).path.startswith("/browser"):
+            self.log_message('"%s %s" %s %s', self.command, urlsplit(self.path).path, code, size)
+        else:
+            super().log_request(code, size)
 
     def accepts_gzip(self):
         return any(re.fullmatch(r"gzip(?:\s*;\s*q=(?!0(?:\.0*)?$)[01](?:\.\d+)?)?", part.strip())
                    for part in self.headers.get("Accept-Encoding", "").split(","))
 
     def do_GET(self):
-        if urlsplit(self.path).path == "/api/search":
+        if urlsplit(self.path).path == "/browser":
+            self.send_response(302)
+            self.send_header("Location", "/browser/" + ("?" + urlsplit(self.path).query if urlsplit(self.path).query else ""))
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+        elif urlsplit(self.path).path.startswith("/browser/"):
+            proxy_browser(self)
+        elif urlsplit(self.path).path == "/api/search":
             self.search()
         elif urlsplit(self.path).path == "/api/reviews":
             self.reviews()

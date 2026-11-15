@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>PaperReading 浏览器</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; height: 100dvh; display: flex; flex-direction: column; background: #e8edf3; color: #172b42; font: 14px system-ui; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 16px; background: #fff; border-bottom: 1px solid #cdd6e1; }
+  header p { margin: 0; flex: 1; }
+  button { padding: 6px 12px; cursor: pointer; }
+  #screen { flex: 1; min-height: 0; overflow: hidden; }
+</style>
+<header><strong>PaperReading 浏览器</strong><p id="status">正在连接当前机器的浏览器…</p><button onclick="location.reload()">重新连接</button></header>
+<div id="screen"></div>
+<script type="module">
+  import RFB from './core/rfb.js';
+  const status = document.querySelector('#status');
+  const socket = new URL('websockify', location.href);
+  socket.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const rfb = new RFB(document.querySelector('#screen'), socket.href);
+  rfb.scaleViewport = true;
+  rfb.addEventListener('connect', () => { status.textContent = '已连接。请直接在下方浏览器中登录，完成后回到对话告诉我。'; });
+  rfb.addEventListener('disconnect', () => { status.textContent = '连接已断开，可点“重新连接”。登录状态保留在当前机器。'; });
+</script>
+</html>
