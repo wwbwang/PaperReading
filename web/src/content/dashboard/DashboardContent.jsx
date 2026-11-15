@@ -46,6 +46,7 @@ function PaperDetails({ paper, metadata, keywords, keywordError, onKeywordSelect
       <a href={detail.pdf_url} target="_blank" rel="noopener noreferrer">论文 PDF ↗</a>
       <span className="iclr-muted">{paper.id}</span>
     </div>
+    <h3>作者</h3><p>{detail.authors?.length ? detail.authors.join("；") : "当前快照未提供作者信息。"}</p>
     <h3>Keywords</h3>{keywordError ? <p role="alert">{keywordError} 请点击列表上方“重试关键词”。</p> : keywords === undefined ? <p className="iclr-muted">正在加载关键词…</p> : keywords ? <Keywords text={keywords} onSelect={onKeywordSelect} /> : <p className="iclr-muted">来源未提供关键词。</p>}
     <h3>摘要</h3><p className="iclr-abstract">{detail.abstract || "来源未提供摘要。"}</p>
     <h3>审稿人评分</h3>
@@ -114,20 +115,21 @@ export function DashboardContent() {
   const [input, setInput] = useState("");
   const [keywordInput, setKeywordInput] = useState("");
   const [keywordScope, setKeywordScope] = useState("both");
+  const [authorInput, setAuthorInput] = useState("");
   const [listInput, setListInput] = useState("");
-  const query = input.trim(), keywordQuery = keywordInput.trim(), listQuery = listInput.trim();
+  const query = input.trim(), keywordQuery = keywordInput.trim(), authorQuery = authorInput.trim(), listQuery = listInput.trim();
   const selectKeyword = value => setKeywordInput(value);
   const [status, setStatus] = useState("all");
   const [selection, setSelection] = useState("all");
   const [order, setOrder] = useState("desc");
   const [page, setPage] = useState(0);
   const [expanded, setExpanded] = useState(null);
-  const search = usePaperSearch(metadata, query, keywordQuery, keywordScope);
+  const search = usePaperSearch(metadata, query, keywordQuery, keywordScope, authorQuery);
   const listSearch = usePaperSearch(metadata, listQuery);
   const searching = search.loading;
   const searchError = search.error;
   const retrySearch = search.retry;
-  useEffect(() => { setPage(0); setExpanded(null); }, [query, keywordQuery, keywordScope, listQuery, status, selection, order]);
+  useEffect(() => { setPage(0); setExpanded(null); }, [query, keywordQuery, keywordScope, authorQuery, listQuery, status, selection, order]);
   const baseRows = useMemo(() => allRows.filter(row => (status === "all" || row.status === status)
     && (!search.active || search.ids?.has(row.id))), [allRows, status, search.active, search.ids]);
   const bins = useMemo(() => exact ? exactHistogram(baseRows, allRows) : histogram(baseRows, scale), [baseRows, allRows, scale, exact]);
@@ -153,6 +155,7 @@ export function DashboardContent() {
     ...(status !== "all" ? [{ id: "status", label: "投稿状态", value: status }] : []),
     ...(query.trim() ? [{ id: "search", label: "标题或摘要", value: query.trim() }] : []),
     ...(keywordQuery.trim() ? [{ id: "keywords", label: FUZZY_SCOPES[keywordScope], value: keywordQuery.trim() }] : []),
+    ...(authorQuery ? [{ id: "authors", label: "作者", value: authorQuery }] : []),
   ];
   const tableFilters = [...scopeFilters, ...(selection === "all" ? [] : [{ id: "score-range", label: exact ? "精确平均分" : "平均分区间", value: selection === "missing" ? "无评分" : label(selection) }]),
     ...(listQuery.trim() ? [{ id: "selection-search", label: "当前结果内搜索", value: listQuery.trim() }] : [])];
@@ -167,12 +170,18 @@ export function DashboardContent() {
       <label><span>模糊查询范围</span><select name="keyword-scope" value={keywordScope} onChange={event => setKeywordScope(event.target.value)}>
         {Object.entries(FUZZY_SCOPES).map(([value, text]) => <option key={value} value={value}>{text}</option>)}
       </select></label>
+      <label className="iclr-author-filter"><span>作者搜索</span><input type="search" name="authors" maxLength={500} value={authorInput}
+        onChange={event => setAuthorInput(event.target.value)} disabled={!metadata.authorPaperCount} aria-describedby="author-search-availability"
+        placeholder={metadata.authorPaperCount ? "作者姓名，支持部分匹配…" : "当前快照未提供作者信息"} /></label>
       <label><span>投稿状态</span><select name="paper-status" value={status} onChange={event => setStatus(event.target.value)}>
         <option value="all">全部状态</option>{statuses.map(value => <option key={value} value={value}>{STATUS_LABELS[value] || value}</option>)}
       </select></label>
-      {(input || keywordInput || keywordScope !== "both" || listInput || status !== "all" || selection !== "all") && <button type="button" className="iclr-button" onClick={() => { setInput(""); setKeywordInput(""); setKeywordScope("both"); setListInput(""); setStatus("all"); setSelection("all"); }}>重置筛选</button>}
+      {(input || keywordInput || authorInput || keywordScope !== "both" || listInput || status !== "all" || selection !== "all") && <button type="button" className="iclr-button" onClick={() => { setInput(""); setKeywordInput(""); setAuthorInput(""); setKeywordScope("both"); setListInput(""); setStatus("all"); setSelection("all"); }}>重置筛选</button>}
     </div>
-    {searching && <p className="iclr-search-status iclr-muted" role="status">正在搜索论文和关键词…</p>}
+    <p id="author-search-availability" className="iclr-author-note iclr-muted">{metadata.authorPaperCount
+      ? `${number(metadata.authorPaperCount)} / ${number(allRows.length)} 篇有作者信息；支持姓名部分匹配，多个词需匹配同一位作者。`
+      : "当前年份的快照未提供作者信息，暂不可按作者搜索；其他搜索和筛选仍可使用。"}</p>
+    {searching && <p className="iclr-search-status iclr-muted" role="status">正在搜索论文、关键词和作者…</p>}
     {searchError && <p role="alert">{searchError} <button className="iclr-button" onClick={retrySearch}>重试搜索</button></p>}
     <div className="iclr-metrics">
       {[
@@ -197,7 +206,7 @@ export function DashboardContent() {
         <label><span>搜索当前筛选结果</span><input type="search" name="selection-search" maxLength={500} value={listInput}
           onChange={event => setListInput(event.target.value)} aria-describedby="selection-search-scope" placeholder="在已选论文中搜索标题或摘要…" /></label>
         {listInput && <button type="button" className="iclr-button" onClick={() => setListInput("")}>清除结果内搜索</button>}
-        <p id="selection-search-scope" className="iclr-muted">{searchError ? "筛选范围暂不可用，请重试上方搜索。" : searching ? "正在更新筛选范围…" : `搜索范围：${metadata.conference} · 当前搜索、关键词、状态及均分设置下的全部 ${number(selectedRows.length)} 篇论文（含所有分页）。`}</p>
+        <p id="selection-search-scope" className="iclr-muted">{searchError ? "筛选范围暂不可用，请重试上方搜索。" : searching ? "正在更新筛选范围…" : `搜索范围：${metadata.conference} · 当前搜索、关键词、作者、状态及均分设置下的全部 ${number(selectedRows.length)} 篇论文（含所有分页）。`}</p>
         {listSearch.loading && <p className="iclr-list-search-status iclr-muted" role="status">正在搜索当前筛选结果…</p>}
         {listSearch.error && <p role="alert">{listSearch.error} <button className="iclr-button" onClick={listSearch.retry}>重试结果内搜索</button></p>}
       </div>}

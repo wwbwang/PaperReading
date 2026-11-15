@@ -115,10 +115,10 @@ class DashboardHandler(SimpleHTTPRequestHandler):
     def search(self):
         params = parse_qs(urlsplit(self.path).query, keep_blank_values=True)
         required = {"conference", "year", "revision", "q"}
-        valid = required <= set(params) <= required | {"keywords", "keyword_scope"} and all(len(v) == 1 for v in params.values())
+        valid = required <= set(params) <= required | {"keywords", "keyword_scope", "authors"} and all(len(v) == 1 for v in params.values())
         values = {k: v[0] for k, v in params.items()}
         scope = values.get("keyword_scope", "both")
-        if not valid or scope not in {"both", "keywords", "title"} or values["conference"] != "iclr" or values["year"] not in {"2026", "2027"} or not re.fullmatch(r"[a-f0-9]{64}", values["revision"]) or len(values["q"]) > 500 or len(values.get("keywords", "")) > 500:
+        if not valid or scope not in {"both", "keywords", "title"} or values["conference"] != "iclr" or values["year"] not in {"2026", "2027"} or not re.fullmatch(r"[a-f0-9]{64}", values["revision"]) or any(len(values.get(key, "")) > 500 for key in ["q", "keywords", "authors"]):
             self.send_error(400, "Invalid search")
             return
         path = Path(self.directory) / "data/iclr" / values["year"] / values["revision"] / "_search.sqlite3"
@@ -127,13 +127,21 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             return
         keyword_query = values.get("keywords", "").strip()
         terms = list(dict.fromkeys(keyword_search_text(keyword_query).split()))
+        author_query = values.get("authors", "").strip()
+        author_terms = list(dict.fromkeys(keyword_search_text(author_query).split()))
         try:
             with closing(sqlite3.connect(path.as_uri() + "?mode=ro", uri=True)) as database:
+                if author_query and not database.execute("SELECT 1 FROM authors LIMIT 1").fetchone():
+                    self.json_response({"status": "unavailable", "message": "当前年份的快照未提供作者信息，暂不可按作者搜索。"}, 422)
+                    return
                 columns = {"both": ["keyword_search", "title_search"], "keywords": ["keyword_search"], "title": ["title_search"]}[scope]
                 clause = " AND (" + " OR ".join(f"instr({column}, ?) > 0" for column in columns) + ")"
                 sql = "SELECT id FROM papers WHERE instr(search, ?) > 0" + clause * len(terms)
                 arguments = (values["q"].strip().lower(), *(term for term in terms for _ in columns))
-                ids = [] if keyword_query and not terms else [row[0] for row in database.execute(sql, arguments)]
+                if author_terms:
+                    sql += " AND EXISTS (SELECT 1 FROM authors WHERE authors.paper_id = papers.id" + " AND instr(authors.search, ?) > 0" * len(author_terms) + ")"
+                    arguments += tuple(author_terms)
+                ids = [] if (keyword_query and not terms) or (author_query and not author_terms) else [row[0] for row in database.execute(sql, arguments)]
         except sqlite3.Error:
             self.send_error(503, "Search unavailable")
             return

@@ -35,6 +35,12 @@ class ServerTests(unittest.TestCase):
             with sqlite3.connect(folder / "_search.sqlite3") as database:
                 database.execute("CREATE TABLE papers (id TEXT, search TEXT, keywords TEXT, keyword_search TEXT, title_search TEXT)")
                 database.executemany("INSERT INTO papers VALUES (?, ?, ?, ?, ?)", [(f"{year}-a", "title-only multi-agent\nabstract only needle%_ 图像", "Image Restoration; Multi-Agent; 图像", "image restoration multi agent 图像", "title only multi agent"), (f"{year}-b", "another\nsecond abstract", "Diffusion; Generative Modeling", "diffusion generative modeling", "another")])
+                database.execute("CREATE TABLE authors (paper_id TEXT, name TEXT, search TEXT)")
+                if year == 2026:
+                    database.executemany("INSERT INTO authors VALUES (?, ?, ?)", [
+                        ("2026-a", "Alice Li", "alice li"), ("2026-a", "Bob Zhang", "bob zhang"),
+                        ("2026-a", "李明", "李明"), ("2026-b", "Alice Zhang", "alice zhang"),
+                        ("2026-b", "François Martin", "françois martin")])
             database.close()
         cls.server = ThreadingHTTPServer(("127.0.0.1", 0), partial(module.DashboardHandler, directory=str(cls.directory)))
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
@@ -139,6 +145,37 @@ class ServerTests(unittest.TestCase):
             self.assertEqual(response.read(), b"PaperReading")
         with self.client.open(self.base + f"/data/iclr/2027/{self.revision}/00.json") as response:
             self.assertIn("immutable", response.headers["Cache-Control"])
+
+    def test_author_search_matches_one_author_and_intersects_other_queries(self):
+        for authors, query, keywords, expected in [
+            ("ALIC", "", "", ["2026-a", "2026-b"]),
+            ("ＡＬＩＣＥ", "", "", ["2026-a", "2026-b"]),
+            ("zhang alice", "", "", ["2026-b"]),
+            ("li alice", "", "", ["2026-a", "2026-b"]),
+            ("bob zhang", "", "", ["2026-a"]),
+            ("François", "", "", ["2026-b"]),
+            ("李", "", "", ["2026-a"]),
+            ("alice", "needle", "", ["2026-a"]),
+            ("alice", "", "diff", ["2026-b"]),
+            ("alice", "needle", "diff", []),
+            ("needle", "", "", []),
+            ("%_'", "", "", []),
+            ("' OR 1=1 --", "", "", []),
+        ]:
+            url = self.search_url(2026, query=query) + "&" + urlencode({"authors": authors, "keywords": keywords})
+            with self.subTest(authors=authors, query=query, keywords=keywords), self.client.open(url) as response:
+                self.assertEqual(json.load(response)["ids"], expected)
+
+    def test_missing_author_data_is_reported_separately_from_empty_results(self):
+        url = self.search_url(2027, query="") + "&authors=alice"
+        with self.assertRaises(HTTPError) as caught:
+            self.client.open(url)
+        self.assertEqual(caught.exception.code, 422)
+        self.assertEqual(json.load(caught.exception)["status"], "unavailable")
+        for suffix in ["&authors=a&authors=b", "&authors=" + "a" * 501]:
+            with self.assertRaises(HTTPError) as caught:
+                self.client.open(self.search_url(2026, query="") + suffix)
+            self.assertEqual(caught.exception.code, 400)
 
     def test_review_endpoint_checks_year_membership_before_fetching(self):
         params = {"year": 2027, "revision": self.revision, "paper_id": "2027-a"}

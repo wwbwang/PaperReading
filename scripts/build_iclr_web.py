@@ -20,6 +20,8 @@ PLUGIN = Path("/root/.codex/plugins/cache/openai-curated-remote/data-analytics/1
 ARTIFACT_IDS = {2026: "dashboard:paperreading-iclr-2026",
                 2027: 'dashboard:f4d4d306-d1e0-4b7f-a31d-63c7e8c00469'}
 REVIEW_FIELDS = ["rating", "confidence", "soundness", "presentation", "contribution", "informativeness"]
+# Change this when immutable detail payloads change, even if the source snapshot does not.
+WEB_SCHEMA = "authors-v1"
 
 
 def snapshot(year=2027, assets=None):
@@ -29,15 +31,21 @@ def snapshot(year=2027, assets=None):
         raise ValueError("Requested year does not match the dataset manifest")
     scale = manifest.get("rating_scale", {"min": 0, "max": 10, "values": [0, 2, 4, 6, 8, 10]})
     bin_count = 2 * (scale["max"] - scale["min"])
-    revision = manifest["output_sha256"]["papers.jsonl"]
-    keywords = {}
+    revision = hashlib.sha256(json.dumps({"papers": manifest["output_sha256"]["papers.jsonl"],
+                                         "source": manifest["provenance"].get("sha256"),
+                                         "schema": WEB_SCHEMA}, sort_keys=True).encode()).hexdigest()
+    keywords, authors = {}, {}
     if manifest["provenance"]["source"] == "papercopilot":
         raw = (directory / "raw/papercopilot.json").read_bytes()
         if hashlib.sha256(raw).hexdigest() != manifest["provenance"]["sha256"]:
             raise ValueError("Keyword source does not match the pinned mirror")
-        keywords = {row.get("openreview_forum") or row["id"]: row.get("keywords") or "" for row in json.loads(raw)}
+        for row in json.loads(raw):
+            paper_id = row.get("openreview_forum") or row["id"]
+            keywords[paper_id] = row.get("keywords") or ""
+            authors[paper_id] = [name.strip() for name in (row.get("author") or "").split(";") if name.strip()]
         del raw
     rows, available_fields, chunks = [], set(), {}
+    author_paper_count = 0
     database = None
     if assets is not None:
         assets.mkdir(parents=True, exist_ok=True)
@@ -45,6 +53,8 @@ def snapshot(year=2027, assets=None):
         database_path.unlink(missing_ok=True)
         database = sqlite3.connect(database_path)
         database.execute("CREATE TABLE papers (id TEXT PRIMARY KEY, search TEXT NOT NULL, keywords TEXT NOT NULL, keyword_search TEXT NOT NULL, title_search TEXT NOT NULL)")
+        database.execute("CREATE TABLE authors (paper_id TEXT NOT NULL, name TEXT NOT NULL, search TEXT NOT NULL)")
+        database.execute("CREATE INDEX authors_paper_id ON authors (paper_id)")
         database.execute("CREATE TABLE metadata (revision TEXT NOT NULL)")
         database.execute("INSERT INTO metadata VALUES (?)", (revision,))
     for line in (directory / "papers.jsonl").open():
@@ -58,6 +68,8 @@ def snapshot(year=2027, assets=None):
             "id", "title", "status", "rating_mean",
         ]}
         paper_keywords = paper.get("keywords", keywords.get(paper["id"], ""))
+        paper_authors = paper.get("authors", authors.get(paper["id"], []))
+        author_paper_count += bool(paper_authors)
         row["rating_count"] = len(scores)
         if scores and year == 2027:
             mean = Fraction(sum(scores), len(scores))
@@ -69,6 +81,7 @@ def snapshot(year=2027, assets=None):
         chunk = hashlib.sha256(paper["id"].encode()).hexdigest()[:2]
         row["detail_chunk"] = chunk
         detail = {key: paper[key] for key in ["id", "abstract", "paper_url", "pdf_url"]}
+        detail["authors"] = paper_authors
         detail["reviews_json"] = json.dumps([
             {k: r.get(k) for k in ["reviewer", *REVIEW_FIELDS]}
             for r in paper["reviews"]
@@ -77,6 +90,8 @@ def snapshot(year=2027, assets=None):
             chunks.setdefault(chunk, {})[paper["id"]] = detail
             database.execute("INSERT INTO papers VALUES (?, ?, ?, ?, ?)",
                              (paper["id"], (paper["title"] + "\n" + paper["abstract"]).lower(), paper_keywords, keyword_search_text(paper_keywords), keyword_search_text(paper["title"])))
+            database.executemany("INSERT INTO authors VALUES (?, ?, ?)",
+                                 [(paper["id"], name, keyword_search_text(name)) for name in paper_authors])
         rows.append(row)
     if database is not None:
         database.commit()
@@ -102,13 +117,14 @@ def snapshot(year=2027, assets=None):
         "evidenceFlow": [
             {"title": "原始来源", "detail": source_label + "；" + source_url},
             {"title": "本地核对", "detail": "scripts/validate_iclr.py 核对原始镜像与论文导出；官方接口受限，镜像覆盖尚未经官方全量核对。"},
-            {"title": "网站变换", "detail": "scripts/build_iclr_web.py 按指定年份加载主会记录，使用原始总评分求均值；2027 按约分后的精确均分分类，2026 按半分区间分类；关键词保留原始镜像文本，关键词与标题支持联合或单字段部分词匹配，使用 Unicode 归一化并忽略大小写和分隔符；浏览器交集筛选后重新计数。"},
+            {"title": "网站变换", "detail": "scripts/build_iclr_web.py 按指定年份加载主会记录，使用原始总评分求均值；2027 按约分后的精确均分分类，2026 按半分区间分类；关键词和作者保留原始镜像文本，关键词与标题支持联合或单字段部分词匹配，作者查询的所有词需命中同一作者；使用 Unicode 归一化并忽略大小写和分隔符；浏览器交集筛选后重新计数。"},
         ],
     }
     return {
         "title": "PaperReading", "surface": "dashboard", "status": "reviewed",
         "buildStatus": "complete", "generatedAt": manifest["generated_at"], "filters": [],
         "iclr": {"year": year, "conference": manifest["conference"], "ratingScale": scale,
+                 "authorPaperCount": author_paper_count,
                  "reviewFields": [field for field in REVIEW_FIELDS if field in available_fields],
                  "retrievedAt": manifest["provenance"]["retrieved_at"], "source": source_label,
                  "officialCoverageVerified": manifest["provenance"]["official_coverage_verified"],
@@ -166,11 +182,10 @@ def main():
     (ROOT / ".runtime").mkdir(exist_ok=True)
     previous = json.loads((WEB / "src/data.json").read_text())
     for year in [args.year] if args.year else [2026, 2027]:
-        manifest = json.loads((ROOT / f"iclr{year}/manifest.json").read_text())
-        revision = manifest["output_sha256"]["papers.jsonl"]
         with tempfile.TemporaryDirectory(prefix="paperreading-build-", dir=ROOT / ".runtime") as temporary:
             staging = Path(temporary) / "assets"
             data = snapshot(year, staging)
+            revision = data["iclr"]["revision"]
             data["id"] = ARTIFACT_IDS[year]
             data["exportPreferences"] = previous.get("exportPreferences", {"selected": None, "destinations": []})
             write_json(WEB / "src/data.json", data)

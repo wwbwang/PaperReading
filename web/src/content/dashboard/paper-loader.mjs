@@ -17,11 +17,12 @@ export function loadPaperDetails(metadata, paper) {
   });
 }
 
-export async function searchPapers(metadata, query, signal, keywords = "", keywordScope = "both") {
+export async function searchPapers(metadata, query, signal, keywords = "", keywordScope = "both", authors = "") {
   const params = new URLSearchParams({ conference: "iclr", year: metadata.year, revision: metadata.revision, q: query.trim() });
   if (keywords.trim()) { params.set("keywords", keywords.trim()); params.set("keyword_scope", keywordScope); }
+  if (authors.trim()) params.set("authors", authors.trim());
   const response = await fetch(`/api/search?${params}`, { signal });
-  if (!response.ok) throw new Error(response.status === 409 ? "数据已更新，请刷新页面后搜索。" : "搜索暂不可用，请重试。");
+  if (!response.ok) throw new Error(response.status === 409 ? "数据已更新，请刷新页面后搜索。" : response.status === 422 ? "当前年份的快照未提供作者信息，暂不可按作者搜索。" : "搜索暂不可用，请重试。");
   const result = await response.json();
   if (result.revision !== metadata.revision) throw new Error("搜索结果版本不一致，请刷新页面。");
   if (!Array.isArray(result.ids) || result.ids.some(id => typeof id !== "string" || !id)) throw new Error("搜索结果格式异常，请重试。");

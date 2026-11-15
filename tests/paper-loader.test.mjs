@@ -4,6 +4,23 @@ import { searchPapers } from "../web/src/content/dashboard/paper-loader.mjs";
 
 const metadata = { year: 2027, revision: "test-snapshot" };
 
+test("author queries combine with title and keyword queries", async t => {
+  t.mock.method(globalThis, "fetch", async url => {
+    const params = new URL(url, "http://localhost").searchParams;
+    assert.equal(params.get("authors"), "Alice Zhang");
+    assert.equal(params.get("q"), "image");
+    assert.equal(params.get("keywords"), "diff");
+    assert.equal(params.get("keyword_scope"), "title");
+    return new Response(JSON.stringify({ revision: metadata.revision, ids: ["paper-a"] }));
+  });
+  assert.deepEqual([...await searchPapers(metadata, "image", undefined, "diff", "title", "  Alice Zhang  ")], ["paper-a"]);
+});
+
+test("missing author data is not presented as an empty search result", async t => {
+  t.mock.method(globalThis, "fetch", async () => new Response("{}", { status: 422 }));
+  await assert.rejects(searchPapers(metadata, "", undefined, "", "both", "Alice"), /未提供作者信息/);
+});
+
 test("fuzzy search sends both fields by default and respects explicit scope", async t => {
   const scopes = [];
   t.mock.method(globalThis, "fetch", async url => {
