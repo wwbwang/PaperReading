@@ -1,0 +1,18 @@
+{
+  "validated_at": "2026-11-15T03:24:37.248497+00:00",
+  "passed": true,
+  "conference": "ICLR 2027",
+  "paper_count": 42790,
+  "review_count": 126389,
+  "source_papers_reconciled": 42790,
+  "missing_abstracts": 0,
+  "papers_without_ratings": 1989,
+  "zero_ratings": 0,
+  "statuses": {
+    "Active": 37452,
+    "Withdraw": 3627,
+    "Desk Reject": 1711
+  },
+  "official_full_coverage_verified": false,
+  "pdf_accessibility_verified": false
+}

@@ -1,0 +1,12 @@
+{
+  "source": "papercopilot",
+  "repository": "https://github.com/papercopilot/paperlists",
+  "commit": "c1972ecffe42c402c3b840052d65a9d2159df6ae",
+  "source_commit_time": "2026-11-14T05:50:40Z",
+  "url": "https://media.githubusercontent.com/media/papercopilot/paperlists/c1972ecffe42c402c3b840052d65a9d2159df6ae/iclr/iclr2026.json",
+  "sha256": "3f5dd3a3b6279b8807cc2390974f2073fbb42cce7c52c8aa4a937c661a602165",
+  "bytes": 109546539,
+  "retrieved_at": "2026-11-14T17:16:34.027219+00:00",
+  "upstream_collection_time": null,
+  "official_coverage_verified": false
+}

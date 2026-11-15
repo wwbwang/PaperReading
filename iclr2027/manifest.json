@@ -1,0 +1,56 @@
+{
+  "conference": "ICLR 2027",
+  "year": 2027,
+  "rating_scale": {
+    "min": 1,
+    "max": 4,
+    "values": [
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "scope": "main",
+  "generated_at": "2026-11-15T03:23:02.587153+00:00",
+  "provenance": {
+    "source": "papercopilot",
+    "conference": "ICLR 2027",
+    "repository": "https://github.com/papercopilot/paperlists",
+    "commit": "2a56c85a36140b68be4510bc504d169d29a16b05",
+    "source_commit_time": "2026-11-15T00:15:56Z",
+    "url": "https://media.githubusercontent.com/media/papercopilot/paperlists/2a56c85a36140b68be4510bc504d169d29a16b05/iclr/iclr2027.json",
+    "sha256": "ef0de3dc1244307995beffd6d896e668f32b945f36e1852c932f0c8e5f395a7c",
+    "bytes": 210916864,
+    "retrieved_at": "2026-11-15T03:22:10.750196+00:00",
+    "upstream_collection_time": null,
+    "official_coverage_verified": false
+  },
+  "source_record_count": 42790,
+  "paper_count": 42790,
+  "review_count": 126389,
+  "rating_count": 126389,
+  "papers_without_ratings": 1989,
+  "papers_without_abstract": 0,
+  "zero_ratings_preserved": 0,
+  "statuses": {
+    "Active": 37452,
+    "Withdraw": 3627,
+    "Desk Reject": 1711
+  },
+  "tracks": {
+    "main": 42790
+  },
+  "limitations": [
+    "Coverage of a mirror is not proof of the official public submission total.",
+    "PDF URLs are constructed from forum IDs; PDF accessibility was not batch-verified.",
+    "Mirror reviewer aliases have no review note IDs or review modification times.",
+    "Scores are snapshot values, not a reconstructed review history.",
+    "ICLR 2027 is in its review/discussion period in this snapshot; scores can change and Active is not an acceptance decision."
+  ],
+  "output_sha256": {
+    "papers.jsonl": "e26f958ba279e0605b1d7cf1725247f37bc66b9906ff18e6d6bf5b3a226f91c9",
+    "papers.csv": "13ab437f59fb854df7bb1922c3803afe8ccb3a75077843508d6a4724ce9c389c",
+    "reviews.csv": "8e129648abc08d74f005a1d6210bc7f276e4003ddb8abd9e03c9eb93c2ed8daa"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "source": "papercopilot",
+  "conference": "ICLR 2027",
+  "repository": "https://github.com/papercopilot/paperlists",
+  "commit": "2a56c85a36140b68be4510bc504d169d29a16b05",
+  "source_commit_time": "2026-11-15T00:15:56Z",
+  "url": "https://media.githubusercontent.com/media/papercopilot/paperlists/2a56c85a36140b68be4510bc504d169d29a16b05/iclr/iclr2027.json",
+  "sha256": "ef0de3dc1244307995beffd6d896e668f32b945f36e1852c932f0c8e5f395a7c",
+  "bytes": 210916864,
+  "retrieved_at": "2026-11-15T03:22:10.750196+00:00",
+  "upstream_collection_time": null,
+  "official_coverage_verified": false
+}

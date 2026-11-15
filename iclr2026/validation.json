@@ -1,0 +1,19 @@
+{
+  "validated_at": "2026-11-14T17:18:11.680870+00:00",
+  "passed": true,
+  "paper_count": 19814,
+  "review_count": 75858,
+  "source_papers_reconciled": 19814,
+  "missing_abstracts": 0,
+  "papers_without_ratings": 340,
+  "zero_ratings": 1318,
+  "statuses": {
+    "Withdraw": 5210,
+    "Reject": 8345,
+    "Poster": 5127,
+    "Desk Reject": 908,
+    "Oral": 224
+  },
+  "official_full_coverage_verified": false,
+  "pdf_accessibility_verified": false
+}

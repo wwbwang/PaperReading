@@ -1,0 +1,46 @@
+{
+  "conference": "ICLR 2026",
+  "scope": "main",
+  "generated_at": "2026-11-14T17:16:37.340667+00:00",
+  "provenance": {
+    "source": "papercopilot",
+    "repository": "https://github.com/papercopilot/paperlists",
+    "commit": "c1972ecffe42c402c3b840052d65a9d2159df6ae",
+    "source_commit_time": "2026-11-14T05:50:40Z",
+    "url": "https://media.githubusercontent.com/media/papercopilot/paperlists/c1972ecffe42c402c3b840052d65a9d2159df6ae/iclr/iclr2026.json",
+    "sha256": "3f5dd3a3b6279b8807cc2390974f2073fbb42cce7c52c8aa4a937c661a602165",
+    "bytes": 109546539,
+    "retrieved_at": "2026-11-14T17:16:34.027219+00:00",
+    "upstream_collection_time": null,
+    "official_coverage_verified": false
+  },
+  "source_record_count": 22748,
+  "paper_count": 19814,
+  "review_count": 75858,
+  "rating_count": 75858,
+  "papers_without_ratings": 340,
+  "papers_without_abstract": 0,
+  "zero_ratings_preserved": 1318,
+  "statuses": {
+    "Withdraw": 5210,
+    "Reject": 8345,
+    "Poster": 5127,
+    "Desk Reject": 908,
+    "Oral": 224
+  },
+  "tracks": {
+    "main": 19814
+  },
+  "limitations": [
+    "Coverage of a mirror is not proof of the official public submission total.",
+    "PDF URLs are constructed from forum IDs; PDF accessibility was not batch-verified.",
+    "Mirror reviewer aliases have no review note IDs or review modification times.",
+    "Scores are snapshot values, not a reconstructed review history.",
+    "ICLR 2026 reset reviews to the pre-rebuttal state after its security incident."
+  ],
+  "output_sha256": {
+    "papers.jsonl": "f09069f42a59b4916cada227fd0e4e6e443e04da7cc334f85ca691d00b5286fa",
+    "papers.csv": "04068d991ac0d4cecd787d4e1ebc95552fa2a8dce6f5b5f77551eb88c047ecef",
+    "reviews.csv": "ddd01f8128e6ce232418d5ab00170de0faa94d3c1b79e1fbb27cb1d824763398"
+  }
+}
