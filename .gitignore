@@ -1,0 +1,16 @@
+.runtime/
+web/dist/
+__pycache__/
+*.pyc
+node_modules/
+.env
+.env.*
+!.env.example
+web/.data-app-offline/
+
+# Downloaded datasets and rebuildable exports stay local.
+/iclr20*/papers.csv
+/iclr20*/papers.jsonl
+/iclr20*/reviews.csv
+/iclr20*/raw/*
+!/iclr20*/raw/papercopilot_source.json
