@@ -155,7 +155,7 @@ python scripts/build_iclr_web.py
 
 默认构建两个年份和首页；之后只更新其中一年可运行 `python scripts/build_iclr_web.py --year 2027`（或 `2026`），另一年份仍保留。新工作目录先运行完整构建。每年拥有独立稳定的 artifact ID，2027 保留原 ID。构建插件位置变化时可通过 `--plugin-root` 指定安装目录。抓取器的 `--output` 可指定另一数据目录保存额外快照。
 
-构建生成 `web/dist/index.html`、`catalog.json`、`iclr/<year>/` 和 `data/iclr/<year>/<snapshot-hash>/`。前者是会议/年份入口，年份目录是标准 Data 仪表盘，数据目录包含详情分片和只读搜索库。原始论文导出没有删减；`web/src/data.json` 只保存最后构建年份的精简首屏数据。
+构建生成 `web/dist/index.html`、`catalog.json`、`iclr/<year>/` 和 `data/iclr/<year>/<snapshot-hash>/`。前者是会议/年份入口，年份目录是标准 Data 仪表盘，数据目录包含详情分片和只读搜索库。两个构建命令均从校验过的本地论文导出读取数据，在临时项目编译，仅替换目标年份；构建失败保留已上线页面，正常构建不修改 `web/src/data.json`。只有显式 `--prepare-only` 会写入编辑用首屏数据。
 
 前台启动服务，Ctrl+C 停止：
 
@@ -170,6 +170,8 @@ kill "$(cat .runtime/paperreading.pid)"
 ```
 
 服务仅提供 `web/dist/` 的公开文件及 `/api/search`、`/api/keywords`、`/api/wordcloud`、`/api/reviews`，不暴露工作目录、原始镜像和 SQLite 文件。搜索严格按会议、年份和数据版本隔离；访问网站不会自动向 OpenReview 请求数据。更新网站数据后重建并刷新即可，修改服务脚本后须重启服务。
+
+展开评价时，已有本地审稿正文（包括已确认无正文的记录）直接读取，不因缓存超过 6 小时而自动联网。未缓存的论文才按需获取；更新已缓存正文使用 `python scripts/sync_review_text.py --year 2026 2027 --refresh`，或 `scripts/review_text.py --year YEAR --paper-id ID --refresh`。页面显示正文的实际采集时间，评分仍属于独立论文快照。
 
 ## 网站使用与验证
 
@@ -203,6 +205,8 @@ python scripts/sync_library.py --venues tip --years 2025 2026 --refresh
 
 来源依次使用公开镜像、官方论文集／录用名单及出版机构登记的 Crossref 元数据，逐来源标注覆盖情况。会议记录按会议届次归档，期刊按 Crossref 的 `published/issued` 年归档，可能与 Early Access 或印刷卷期年份不同。期刊缺失摘要可经已发表 DOI 与 OpenAlex 精确关联；作者保留出版机构正式公开名单，不从预印本推断。镜像中的逐人评分可视化为精确均分，不把录用状态、综合评分或缺失值伪造成审稿人评分。新来源尚未提供的审稿正文明确显示缺失；不声称会议或期刊没有审稿。
 
+已可用的数据刷新失败或意外返回空列表时，保留上一份论文和清单；失败详情保存在该年份的 `refresh-error.json`，下次成功刷新后清除。未逐篇核实 track 的会议论文集不宣称全部属于主会。
+
 构建器在独立临时项目中使用规范 Data 编译器，原子替换单个年份，保留服务端口和其他来源。不可用年份只展示原因及官方链接，不用“0 篇”冒充全量统计。摘要和审稿正文共用本地 KaTeX，支持行内／独立公式，并兼容公开评价中多转义一层的格式命令；无法解析的公式保留原文，禁用不受信任的 TeX HTML／链接功能。
 
 ## 首页与作者跟踪
@@ -222,3 +226,9 @@ python scripts/author_tracking.py --refresh-profiles
 ```
 
 作者目录抓取失败或解析为空时保留上一份有效证据。该功能按构建更新，不创建定时任务，也不发送外部通知。
+
+### 首页录取与投稿统计口径
+
+`library/conference-statistics.json` 维护已人工核实、附来源与核实日期的会议主会汇总。首页标注“核实”时，录取数与总投稿数都取自同一届主会统计，不与本地论文列表计数混用；标注“本地”时，仅显示本地录取记录数，总投稿数保持未知。列表里有少量公开拒稿不构成全量覆盖证据。
+
+ICML 2025 的官方 Fact Sheet 公布主会录取 3,260 篇、录取率约 27%；RIKEN AIP 公告明确分母为 12,107 篇，计算为 26.93%。本地镜像仅 3,431 条，其中录取状态 3,269 条、拒稿 162 条，因此原先 `3,269 / 3,431` 的展示不能解释为会议录取率。来源链接及范围均保存在该统计文件和首页的数据说明中。论文页继续显示本地实际收录数量，不补造缺失的拒稿记录。

@@ -5,15 +5,58 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.paper_venues import VENUES, YEARS, not_held, valid_dataset
-from scripts.sync_library import crossref_paper, cvf, journal, matches_container
+from scripts.sync_library import crossref_paper, cvf, journal, matches_container, sync_one, mirror
 from scripts.build_library import decision_counts, snapshot, write_json
 
 
 class LibraryTests(unittest.TestCase):
+    def test_missing_mirror_status_requires_publication_evidence(self):
+        class Cache:
+            def __init__(self, row):
+                self.row = row
+
+            def get(self, url):
+                return json.dumps([self.row]).encode()
+
+        cases = [("icml", "https://openreview.net/forum?id=p", "Unknown"),
+                 ("cvpr", "https://openaccess.thecvf.com/content/CVPR2025/html/paper.html", "Published"),
+                 ("cvpr", "https://openaccess.thecvf.com/content/CVPR2024/html/paper.html", "Unknown"),
+                 ("cvpr", "https://example.org/content/CVPR2025/html/paper.html", "Unknown")]
+        for venue, url, expected in cases:
+            with self.subTest(venue=venue, url=url):
+                papers = mirror(Cache({"id": "p", "title": "Title", "site": url}), venue, 2025,
+                                {"sha": "commit", "paths": {f"{venue}/{venue}2025.json"}})
+                self.assertEqual(papers[0]["status"], expected)
+                self.assertEqual(decision_counts(papers)["acceptedPaperCount"], int(expected == "Published"))
+
+    def test_failed_or_empty_refresh_keeps_the_last_usable_snapshot(self):
+        for outcome in [TimeoutError("offline"), []]:
+            with self.subTest(outcome=outcome), tempfile.TemporaryDirectory() as directory:
+                folder = Path(directory) / "icml/2025"
+                folder.mkdir(parents=True)
+                previous = {"status": "available", "paper_count": 1, "sha256": "previous"}
+                (folder / "manifest.json").write_text(json.dumps(previous))
+                (folder / "papers.jsonl").write_text("previous paper\n")
+                with patch("scripts.sync_library.DATA", Path(directory)), \
+                        patch("scripts.sync_library.mirror", side_effect=outcome if isinstance(outcome, Exception) else None, return_value=outcome), \
+                        patch("scripts.sync_library.conference_crossref", return_value=([], {})):
+                    sync_one("icml", 2025, {}, refresh=True)
+                self.assertEqual(json.loads((folder / "manifest.json").read_text()), previous)
+                self.assertEqual((folder / "papers.jsonl").read_text(), "previous paper\n")
+                self.assertTrue((folder / "refresh-error.json").is_file())
+
+    def test_mirror_numeric_zero_survives_normalization(self):
+        class Cache:
+            def get(self, url):
+                return json.dumps([{"id": "paper", "title": "Title", "reviewers": "A", "rating": 0}]).encode()
+        papers = mirror(Cache(), "icml", 2025, {"sha": "commit", "paths": {"icml/icml2025.json"}})
+        self.assertEqual(papers[0]["ratings"], [0])
+        self.assertEqual(papers[0]["rating_mean"], 0)
+
     def test_decision_counts_use_explicit_statuses_not_scores(self):
         rows = [{"status": status, "rating_mean": 10} for status in
                 ["Poster", "Oral", "Spotlight", "Highlight", "Award Candidate", "Accepted", "Published", "Reject", "Desk Reject", "Withdraw", "Active", "Unknown"]]
-        self.assertEqual(decision_counts(rows), {"acceptedPaperCount": 7, "pendingDecisionCount": 2, "totalPaperCount": 12})
+        self.assertEqual(decision_counts(rows), {"acceptedPaperCount": 7, "pendingDecisionCount": 2, "totalPaperCount": None})
 
     def test_proceedings_only_never_imply_a_submission_total_or_acceptance_rate(self):
         self.assertEqual(decision_counts([{"status": "Published"}, {"status": "Accepted"}]),
@@ -22,9 +65,28 @@ class LibraryTests(unittest.TestCase):
 
     def test_pending_and_missing_statuses_are_distinct_from_rejected_decisions(self):
         self.assertEqual(decision_counts([{"status": "Active"}, {}, {"status": "Withdraw"}]),
-                         {"acceptedPaperCount": 0, "pendingDecisionCount": 2, "totalPaperCount": 3})
+                         {"acceptedPaperCount": 0, "pendingDecisionCount": 2, "totalPaperCount": None})
         self.assertEqual(decision_counts([{"status": "rejected"}, {"status": "withdrawn"}]),
-                         {"acceptedPaperCount": 0, "pendingDecisionCount": 0, "totalPaperCount": 2})
+                         {"acceptedPaperCount": 0, "pendingDecisionCount": 0, "totalPaperCount": None})
+
+    def test_partial_public_rejects_never_establish_a_submission_denominator(self):
+        rows = [{"status": "Poster"}] * 3269 + [{"status": "Reject"}] * 162
+        self.assertEqual(decision_counts(rows),
+                         {"acceptedPaperCount": 3269, "pendingDecisionCount": 0, "totalPaperCount": None})
+
+    def test_verified_statistics_keep_both_counts_separate_from_local_records(self):
+        statistics = json.loads((Path(__file__).resolve().parents[1] / "library/conference-statistics.json").read_text())["icml/2025"]
+        counts = decision_counts([{"status": "Poster"}, {"status": "Reject"}], statistics)
+        self.assertEqual((counts["acceptedPaperCount"], counts["totalPaperCount"]), (3260, 12107))
+        self.assertEqual(counts["localAcceptedPaperCount"], 1)
+        self.assertIs(counts["statistics"], statistics)
+        self.assertAlmostEqual(100 * counts["acceptedPaperCount"] / counts["totalPaperCount"], 26.93, places=2)
+
+    def test_statistics_reject_invalid_counts_or_missing_evidence(self):
+        for accepted, submitted, sources in [(3, 2, [{}]), (0, 0, [{}]), (-1, 3, [{}]),
+                                             (True, 3, [{}]), (1, 3, [])]:
+            with self.subTest(accepted=accepted, submitted=submitted, sources=sources), self.assertRaises(ValueError):
+                decision_counts([], {"accepted": accepted, "submitted": submitted, "sources": sources})
 
     def test_staging_snapshot_does_not_overwrite_hardlinked_editable_source(self):
         import os

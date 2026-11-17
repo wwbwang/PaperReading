@@ -7,9 +7,7 @@ import hashlib
 import json
 import shutil
 import sqlite3
-import subprocess
 import sys
-import tempfile
 from fractions import Fraction
 from pathlib import Path
 
@@ -30,6 +28,8 @@ def snapshot(year=2027, assets=None):
     manifest = json.loads((directory / "manifest.json").read_text())
     if manifest["conference"] != f"ICLR {year}":
         raise ValueError("Requested year does not match the dataset manifest")
+    if hashlib.sha256((directory / "papers.jsonl").read_bytes()).hexdigest() != manifest["output_sha256"]["papers.jsonl"]:
+        raise ValueError("Normalized paper snapshot checksum mismatch")
     scale = manifest.get("rating_scale", {"min": 0, "max": 10, "values": [0, 2, 4, 6, 8, 10]})
     bin_count = 2 * (scale["max"] - scale["min"])
     revision = hashlib.sha256(json.dumps({"papers": manifest["output_sha256"]["papers.jsonl"],
@@ -90,7 +90,7 @@ def snapshot(year=2027, assets=None):
         if assets is not None:
             chunks.setdefault(chunk, {})[paper["id"]] = detail
             database.execute("INSERT INTO papers VALUES (?, ?, ?, ?, ?, ?)",
-                             (paper["id"], (paper["title"] + "\n" + paper["abstract"]).lower(), paper_keywords, keyword_search_text(paper_keywords), keyword_search_text(paper["title"]), keyword_search_text(paper["abstract"])))
+                             (paper["id"], (paper["title"] + "\n" + (paper["abstract"] or "")).lower(), paper_keywords, keyword_search_text(paper_keywords), keyword_search_text(paper["title"]), keyword_search_text(paper["abstract"])))
             database.executemany("INSERT INTO authors VALUES (?, ?, ?)",
                                  [(paper["id"], name, keyword_search_text(name)) for name in paper_authors])
         rows.append(row)
@@ -151,29 +151,8 @@ def compress(directory):
 
 
 def build_portal():
-    if (ROOT / "library").is_dir():
-        from scripts.build_library import portal
-        return portal()
-    entries, cards = [], []
-    for year in [2027, 2026]:
-        directory = WEB / "dist" / "iclr" / str(year)
-        build = json.loads((directory / "data-app-build.json").read_text())
-        data = json.loads((directory / build["snapshot"]["path"]).read_text())
-        metadata, rows = data["iclr"], data["queries"]["papers"]["rows"]
-        entries.append({"conference": "ICLR", "year": year, "paperCount": len(rows),
-                        "reviewCount": sum(row["rating_count"] for row in rows),
-                        "ratingScale": metadata["ratingScale"], "url": f"/iclr/{year}/"})
-        cards.append(f'''<a class="year-card" href="/iclr/{year}/"><div class="year-heading"><h3>{year}</h3>
-            <span class="year-arrow" aria-hidden="true">↗</span></div>
-            <p class="year-count">{len(rows):,}<span> 篇论文</span></p>
-            <p class="year-info">{sum(row['rating_count'] for row in rows):,} 条评分 · 原始 {metadata['ratingScale']['min']}–{metadata['ratingScale']['max']} 分</p>
-            <span class="year-cta">查看论文与评分分布 <span aria-hidden="true">→</span></span></a>''')
-    portal = WEB / "portal"
-    template = (portal / "index.html").read_text()
-    (WEB / "dist/index.html").write_text(template.replace("__YEAR_CARDS__", "\n".join(cards)))
-    shutil.copy2(portal / "library.css", WEB / "dist/library.css")
-    write_json(WEB / "dist/catalog.json", {"title": "PaperReading", "datasets": entries})
-    compress(WEB / "dist")
+    from scripts.build_library import portal
+    portal()
 
 
 def main():
@@ -188,44 +167,15 @@ def main():
     if not WEB.exists():
         parser.error("The existing Data app workspace is required")
     (ROOT / ".runtime").mkdir(exist_ok=True)
-    previous = json.loads((WEB / "src/data.json").read_text())
+    from scripts.build_library import build_one
     for year in [args.year] if args.year else [2026, 2027]:
-        with tempfile.TemporaryDirectory(prefix="paperreading-build-", dir=ROOT / ".runtime") as temporary:
-            staging = Path(temporary) / "assets"
-            data = snapshot(year, staging)
-            revision = data["iclr"]["revision"]
+        if args.prepare_only:
+            data = snapshot(year)
             data["id"] = ARTIFACT_IDS[year]
-            data["exportPreferences"] = previous.get("exportPreferences", {"selected": None, "destinations": []})
+            data["exportPreferences"] = json.loads((WEB / "src/data.json").read_text()).get("exportPreferences", {"selected": None, "destinations": []})
             write_json(WEB / "src/data.json", data)
-            if args.prepare_only:
-                continue
-            # The canonical compiler writes dist/. Keep delivered years and detail
-            # assets safe outside that output while compiling the next year.
-            saved = Path(temporary) / "saved"
-            saved.mkdir()
-            for name in [p.name for p in (WEB / "dist").iterdir() if p.is_dir()]:
-                old = WEB / "dist" / name
-                if old.exists():
-                    shutil.move(str(old), saved / name)
-            try:
-                subprocess.run([node, str(args.plugin_root / "output_formats/html/scripts/data-app.mjs"),
-                                "build", "--project-dir", str(WEB), "--separate-data"], check=True)
-                output = WEB / "dist"
-                delivered = saved / "iclr" / str(year)
-                if delivered.exists():
-                    shutil.rmtree(delivered)
-                delivered.mkdir(parents=True)
-                for file in list(output.iterdir()):
-                    shutil.move(str(file), delivered / file.name)
-                target_assets = saved / "data" / "iclr" / str(year) / revision
-                if target_assets.exists():
-                    shutil.rmtree(target_assets)
-                target_assets.parent.mkdir(parents=True, exist_ok=True)
-                shutil.move(str(staging), target_assets)
-            finally:
-                (WEB / "dist").mkdir(exist_ok=True)
-                for item in saved.iterdir():
-                    shutil.move(str(item), WEB / "dist" / item.name)
+        else:
+            build_one("iclr", year, builder=args.plugin_root / "output_formats/html/scripts/data-app.mjs")
     if not args.prepare_only:
         build_portal()
         print("PaperReading ready: http://localhost:8000/", flush=True)

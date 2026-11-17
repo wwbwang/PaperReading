@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from scripts.paper_venues import VENUES, YEARS
 from scripts.paper_keywords import keyword_search_text
-from scripts.build_iclr_web import compress
+from scripts.build_iclr_web import compress, snapshot as iclr_snapshot, ARTIFACT_IDS
 from scripts.author_tracking import build_tracking
 
 WEB = ROOT / "web"
@@ -28,13 +28,21 @@ ACCEPTED_STATUSES = {"accepted", "accept", "published", "poster", "oral", "spotl
 NON_ACCEPTED_STATUSES = {"reject", "rejected", "desk reject", "withdraw", "withdrawn"}
 
 
-def decision_counts(rows):
+def decision_counts(rows, statistics=None):
     statuses = [str(row.get("status") or "").strip().casefold() for row in rows]
     accepted = sum(status in ACCEPTED_STATUSES for status in statuses)
-    return {"acceptedPaperCount": accepted,
-            "pendingDecisionCount": sum(status not in ACCEPTED_STATUSES | NON_ACCEPTED_STATUSES for status in statuses),
-            # A proceedings-only list contains no evidence of the submission total.
-            "totalPaperCount": len(rows) if rows and accepted != len(rows) else None}
+    counts = {"acceptedPaperCount": accepted,
+              "pendingDecisionCount": sum(status not in ACCEPTED_STATUSES | NON_ACCEPTED_STATUSES for status in statuses),
+              # Public rejects do not establish coverage of all submissions either.
+              "totalPaperCount": None}
+    if statistics is not None:
+        admitted, submitted = statistics["accepted"], statistics["submitted"]
+        if (type(admitted) is not int or type(submitted) is not int
+                or not 0 <= admitted <= submitted or submitted == 0 or not statistics.get("sources")):
+            raise ValueError("Submission statistics require valid counts and sources")
+        counts.update(acceptedPaperCount=admitted, totalPaperCount=submitted,
+                      localAcceptedPaperCount=accepted, statistics=statistics)
+    return counts
 
 
 def write_json(path, value):
@@ -115,15 +123,22 @@ def snapshot(venue, year, assets):
                 "methods": [{"language": "python", "code": f"python scripts/sync_library.py --venues {venue} --years {year}\npython scripts/build_library.py --venues {venue} --years {year}"}]}}}
 
 
-def build_one(venue, year, project=None):
+def build_one(venue, year, project=None, builder=BUILDER):
     dist = WEB / "dist"
     target = dist / venue / str(year)
     digest = hashlib.sha256()
-    inputs = [*sorted((WEB / "src/content").rglob("*")), Path(__file__), ROOT / "scripts/build_iclr_web.py"]
+    inputs = [*sorted((WEB / "src/content").rglob("*")), Path(__file__),
+              ROOT / "scripts/build_iclr_web.py", ROOT / "scripts/paper_keywords.py", ROOT / "scripts/paper_venues.py"]
     inputs.append(ROOT / f"iclr{year}/manifest.json" if venue == "iclr" and year in (2026, 2027) else ROOT / "library" / venue / str(year) / "manifest.json")
     for path in inputs:
         if path.is_file():
             digest.update(str(path.relative_to(ROOT)).encode());digest.update(path.read_bytes())
+    # A manifest match cannot conceal a missing or modified normalized export.
+    source = ROOT / (f"iclr{year}" if venue == "iclr" and year in (2026, 2027) else f"library/{venue}/{year}")
+    manifest = json.loads((source / "manifest.json").read_text())
+    expected = manifest.get("sha256") or manifest.get("output_sha256", {}).get("papers.jsonl")
+    if expected and hashlib.sha256((source / "papers.jsonl").read_bytes()).hexdigest() != expected:
+        raise ValueError("Normalized paper snapshot checksum mismatch")
     fingerprint = digest.hexdigest()
     stamp = target / "authored-build.json"
     if stamp.exists() and json.loads(stamp.read_text()).get("inputSha256") == fingerprint and (target / "index.html").exists():
@@ -131,20 +146,21 @@ def build_one(venue, year, project=None):
         return
     with tempfile.TemporaryDirectory(prefix="library-build-", dir=ROOT / ".runtime") as temp:
         temporary = Path(temp)
+        assets = temporary / "assets"
         if venue == "iclr" and year in (2026, 2027):
-            old = dist / venue / str(year)
-            build = json.loads((old / "data-app-build.json").read_text())
-            data = json.loads((old / build["snapshot"]["path"]).read_text())
+            data = iclr_snapshot(year, assets)
+            data["id"] = ARTIFACT_IDS[year]
             data["iclr"].update(venue="iclr", label="ICLR", kind="conference")
-            assets = None
         else:
-            assets = temporary / "assets"
             data = snapshot(venue, year, assets)
+        previous = json.loads((WEB / "src/data.json").read_text())
+        if "exportPreferences" in previous:
+            data["exportPreferences"] = previous["exportPreferences"]
         if project is None:
             project = temporary / "project"
             shutil.copytree(WEB, project, copy_function=os.link, ignore=shutil.ignore_patterns("dist", "node_modules", ".data-app-offline", ".git"))
         write_json(project / "src/data.json", data)
-        subprocess.run(["node", str(BUILDER), "build", "--project-dir", str(project), "--separate-data"], check=True, stdout=subprocess.DEVNULL)
+        subprocess.run(["node", str(builder), "build", "--project-dir", str(project), "--separate-data"], check=True, stdout=subprocess.DEVNULL)
         if assets:
             destination = dist / "data" / venue / str(year) / data["iclr"]["revision"]
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -171,6 +187,7 @@ def build_one(venue, year, project=None):
 
 def portal():
     entries, sections, datasets = [], [], []
+    statistics = json.loads((ROOT / "library/conference-statistics.json").read_text())
     for venue, (label, kind, name, homepage) in VENUES.items():
         cards = []
         for year in reversed(YEARS):
@@ -184,22 +201,30 @@ def portal():
             status = meta.get("datasetStatus", "available")
             entry = {"conference": label, "venue": venue, "kind": kind, "year": year, "paperCount": len(rows),
                      "status": status, "reviewCount": sum(r["rating_count"] for r in rows), "url": f"/{venue}/{year}/"}
-            entry.update(decision_counts(rows))
+            entry.update(decision_counts(rows, statistics.get(f"{venue}/{year}")))
             entries.append(entry)
             text = f'{len(rows):,}<span> 篇</span>' if rows else {"not_held": "本年不举办", "unavailable": "暂未获取"}.get(status, "暂未获取")
             info = f'{entry["reviewCount"]:,} 条公开评分' if entry["reviewCount"] else "来源未提供公开评分"
             if rows and kind != "journal":
-                accepted = "待定" if not entry["acceptedPaperCount"] and entry["pendingDecisionCount"] else f'{entry["acceptedPaperCount"]:,}'
+                accepted = "待定" if not entry.get("statistics") and not entry["acceptedPaperCount"] and entry["pendingDecisionCount"] else f'{entry["acceptedPaperCount"]:,}'
                 total = f'{entry["totalPaperCount"]:,}' if entry["totalPaperCount"] is not None else "—"
-                text = f'{accepted} / {total}'
-                scope = "仅收录录用论文，总投稿量未知" if total == "—" else "本地收录范围，非官方全量投稿统计"
-                info = f'录取 {accepted} / 总论文 {total}；{scope}；{info}'
+                verified = entry.get("statistics")
+                text = f'<span>{"核实" if verified else "本地"}</span> {accepted} / {total}'
+                scope = (f'{verified["scope"]}；录取率 {100 * verified["accepted"] / verified["submitted"]:.2f}%'
+                         if verified else "录取数为本地记录统计；总投稿量尚未核实")
+                info = f'录取 {accepted} / 总投稿 {total}；{scope}；{info}'
             cards.append(f'<a class="year-card" data-year="{year}" data-status="{status}" href="/{venue}/{year}/" title="{html.escape(info)}" aria-label="{html.escape(label)} {year}，{len(rows):,} 条已获取记录；{html.escape(info)}"><span class="year-heading">{year}</span><span class="year-count">{text}</span><span class="year-arrow" aria-hidden="true">↗</span></a>')
         type_label = {"conference": "会议", "journal": "期刊", "workshop": "Workshop"}[kind]
-        column_label = "收录论文" if kind == "journal" else "录取 / 总论文"
+        column_label = "收录论文" if kind == "journal" else "录取 / 总投稿"
         sections.append(f'<article class="conference" data-kind="{kind}"><div class="conference-header"><div><span class="conference-tag">{type_label}</span><h3>{html.escape(label)}</h3></div><a class="availability" href="{html.escape(homepage)}" target="_blank" rel="noopener noreferrer" aria-label="{html.escape(label)} 官方网站">官网 ↗</a></div><p class="venue-name">{html.escape(name)}</p><div class="year-columns" aria-hidden="true"><span>年份</span><span>{column_label}</span></div><div class="year-grid">{"".join(cards)}</div></article>')
     template = (WEB / "portal/index.html").read_text()
-    (WEB / "dist/index.html").write_text(template.replace("__VENUE_CARDS__", "\n".join(sections)))
+    source_notes = []
+    for statistic in statistics.values():
+        links = "；".join(f'<a href="{html.escape(source["url"])}" target="_blank" rel="noopener noreferrer">{html.escape(source["label"])} ↗</a>'
+                         for source in statistic["sources"])
+        source_notes.append(f'<p>{html.escape(statistic["scope"])}。核实日期：{html.escape(statistic["verified_at"])}。来源：{links}</p>')
+    (WEB / "dist/index.html").write_text(template.replace("__VENUE_CARDS__", "\n".join(sections))
+                                      .replace("__STATISTICS_SOURCES__", "\n".join(source_notes)))
     shutil.copy2(WEB / "portal/library.css", WEB / "dist/library.css")
     for asset in ["portal.js", "authors.js", "reading-state.mjs"]:
         shutil.copy2(WEB / "portal" / asset, WEB / "dist" / asset)
@@ -221,6 +246,7 @@ def main():
     parser.add_argument("--years", nargs="+", type=int, choices=YEARS, default=YEARS)
     parser.add_argument("--portal-only", action="store_true")
     args = parser.parse_args()
+    (ROOT / ".runtime").mkdir(exist_ok=True)
     if not args.portal_only:
         with tempfile.TemporaryDirectory(prefix="library-compiler-", dir=ROOT / ".runtime") as directory:
             project = Path(directory) / "project"

@@ -1,0 +1,19 @@
+{
+  "icml/2025": {
+    "accepted": 3260,
+    "submitted": 12107,
+    "scope": "ICML 2025 主会投稿，不含 Position Papers 和 Workshops",
+    "verified_at": "2026-11-17",
+    "sources": [
+      {
+        "label": "ICML 官方 Fact Sheet：主会录取 3,260 篇，录取率约 27%",
+        "url": "https://media.icml.cc/Conferences/ICML2025/ICML2025_Fact_Sheet.pdf"
+      },
+      {
+        "label": "RIKEN AIP 公告：3,260 篇录取 / 12,107 篇投稿",
+        "url": "https://aip.riken.jp/news/icml2025/?lang=en"
+      }
+    ],
+    "local_snapshot_note": "2026-11-16 镜像共 3,431 条记录，其中 3,269 条为录取状态、162 条为拒稿状态；不是全部投稿，录取状态数量也与会议公布的主会录取数不同。不得以该列表长度计算官方录取率。"
+  }
+}

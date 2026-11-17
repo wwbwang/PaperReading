@@ -129,18 +129,21 @@ def mirror(cache, venue, year, tree):
         paper_url = raw.get("oa") or raw.get("site") or review_url
         if not paper_url:
             continue
+        # An OpenReview submission link alone does not establish acceptance.
+        # CVF's edition-specific proceedings URLs do establish publication.
+        published = paper_url.startswith(f"https://openaccess.thecvf.com/content/{venue.upper()}{year}/html/")
         paper = base(venue, year, re.sub(r"[^A-Za-z0-9_-]", "", str(forum)) or hashlib.sha256(paper_url.encode()).hexdigest()[:24], raw["title"], paper_url)
         paper.update(abstract=raw.get("abstract") or "", authors=public_author_names(raw.get("author")),
                      keywords=raw.get("keywords") or "", pdf_url=raw.get("pdf") or (f"https://openreview.net/pdf?id={forum}" if review_url else ""),
-                     status=raw.get("status") or "Published", source="Paper Copilot 公开镜像（未核实官方全量覆盖）")
+                     status=raw.get("status") or ("Published" if published else "Unknown"), source="Paper Copilot 公开镜像（未核实官方全量覆盖）")
         aliases = str(raw.get("reviewers") or "").split(";") if raw.get("reviewers") else []
-        ratings = str(raw.get("rating") or "").split(";")
+        ratings = str(raw["rating"] if raw.get("rating") is not None else "").split(";")
         # A mirror's aggregate rating is never a substitute for individual reviews.
         if aliases and len(aliases) == len(ratings):
             for i, alias in enumerate(aliases):
                 review = {"reviewer": alias}
                 for field in ["rating", "confidence", "soundness", "presentation", "contribution", "informativeness"]:
-                    values = str(raw.get(field) or "").split(";")
+                    values = str(raw[field] if raw.get(field) is not None else "").split(";")
                     if len(values) == len(aliases):
                         review[field] = numeric(values[i])
                 paper["reviews"].append(review)
@@ -410,7 +413,8 @@ def sync_one(venue, year, tree, refresh=False, refresh_sources=False):
     directory = DATA / venue / str(year)
     cache = Cache(directory / "raw", refresh=refresh_sources)
     existing = directory / "manifest.json"
-    if not refresh and existing.exists() and json.loads(existing.read_text()).get("status") == "available":
+    previous = json.loads(existing.read_text()) if existing.exists() else None
+    if not refresh and previous and previous.get("status") == "available":
         print(f"{venue} {year}: reuse normalized snapshot", flush=True)
         return
     meta = {"venue": venue, "year": year, "label": VENUES[venue][0], "kind": VENUES[venue][1],
@@ -443,6 +447,13 @@ def sync_one(venue, year, tree, refresh=False, refresh_sources=False):
         meta.update(status="available" if rows else "unavailable",
                     message="已缓存公开记录；字段覆盖见下方统计。" if rows else "本次尚未取得可核实的公开论文记录；不代表该年份没有论文。")
     unique = {}
+    if not rows and previous and previous.get("status") == "available":
+        # A failed/empty refresh is not evidence that the previous papers vanished.
+        write_json(directory / "refresh-error.json", {"checked_at": now(),
+                   "errors": meta["errors"] or ["Refresh returned no records"],
+                   "attempted_sources": cache.attempted_sources})
+        print(f"{venue} {year}: refresh failed; retained previous snapshot", flush=True)
+        return
     for paper in rows:
         if paper["id"] in unique:
             if paper["title"] != unique[paper["id"]]["title"]:
@@ -464,6 +475,7 @@ def sync_one(venue, year, tree, refresh=False, refresh_sources=False):
                 scored_count=sum(p["rating_mean"] is not None for p in unique.values()),
                 sources=sorted(cache.sources, key=lambda s: s["url"]), attempted_sources=sorted(set(cache.attempted_sources)))
     write_json(existing, meta)
+    (directory / "refresh-error.json").unlink(missing_ok=True)
     print(f'{venue} {year}: {meta["status"]}, {len(unique)} papers, {meta["abstract_count"]} abstracts', flush=True)
 
 
