@@ -1,7 +1,19 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { createPaperIndex, exactMeanKey, meanLabel, exactHistogram, scoreBin, binLabel, histogram, filterPapers, selectPapers, pageOf } from "../web/src/content/dashboard/paper-data.mjs";
+import { createPaperIndex, countAxis, exactMeanKey, meanLabel, exactHistogram, scoreBin, binLabel, histogram, filterPapers, selectPapers, pageOf } from "../web/src/content/dashboard/paper-data.mjs";
+
+test("count axis labels match their geometric positions even for small results", () => {
+  for (const maximum of [0, 1, 2, 3, 4, 5, 17, 128, 42790]) {
+    const { ceiling, ticks } = countAxis(maximum);
+    assert.ok(ceiling >= maximum);
+    assert.equal(ticks.at(-1), 0);
+    ticks.forEach((tick, i) => {
+      assert.ok(Number.isInteger(tick));
+      assert.ok(Math.abs(tick / ceiling - (1 - i / (ticks.length - 1))) < 1e-10);
+    });
+  }
+});
 
 test("legacy half-point boundaries use the original 1–4 scale and include 4", () => {
   assert.equal(scoreBin([1, 1]), 0);

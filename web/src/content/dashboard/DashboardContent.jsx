@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { DataComponent, MetricCard, Section, useDataApp } from "../../data-app-public.jsx";
-import { binLabel, exactHistogram, meanLabel, histogram, pageOf, selectPapers, STATUS_LABELS } from "./paper-data.mjs";
+import { binLabel, countAxis, exactHistogram, meanLabel, histogram, pageOf, selectPapers, STATUS_LABELS } from "./paper-data.mjs";
 import { loadKeywords, loadPaperDetails } from "./paper-loader.mjs";
 import { usePaperSearch } from "./usePaperSearch.mjs";
 import { ReviewTable } from "./ReviewPreview.jsx";
@@ -22,7 +22,7 @@ function Scores({ paper, positiveThreshold }) {
   const values = JSON.parse(paper.ratings_json);
   return <div className="iclr-scores" aria-label={`审稿人评分：${values.map(v => v ?? "缺失").join("、") || "无评分"}`}>
     {values.length ? values.map((value, index) => <span key={index}
-      className={`iclr-score-chip ${value === null ? "is-missing" : value >= positiveThreshold ? "is-positive" : ""}`}>{value ?? "—"}</span>)
+      className={`iclr-score-chip ${value === null ? "is-missing" : positiveThreshold != null && value >= positiveThreshold ? "is-positive" : ""}`}>{value ?? "—"}</span>)
       : <span className="iclr-muted">无公开评分</span>}
   </div>;
 }
@@ -61,8 +61,7 @@ function PaperDetails({ paper, metadata, keywords, keywordError, onKeywordSelect
 function Distribution({ bins, selection, onSelect, scale, exact }) {
   const [hovered, setHovered] = useState(null);
   const maximum = Math.max(1, ...bins.map(bin => bin.count));
-  const step = 10 ** Math.floor(Math.log10(maximum));
-  const ceiling = Math.ceil(maximum / step) * step;
+  const { ceiling, ticks } = countAxis(maximum);
   const selected = selection !== "all" && selection !== "missing";
   const active = bins.find(bin => bin.bin === (hovered ?? selection));
   return <div className="iclr-distribution">
@@ -73,9 +72,9 @@ function Distribution({ bins, selection, onSelect, scale, exact }) {
     </div>
     <div className="iclr-chart-scroll">
       <div className="iclr-histogram" data-reviewed-rows="papers" style={exact ? { minWidth: Math.max(760, bins.length * 35 + 56) } : undefined}>
-        <div className="iclr-y-axis" aria-hidden="true">{[1, .75, .5, .25, 0].map(fraction => <span key={fraction}>{number(Math.round(ceiling * fraction))}</span>)}</div>
+        <div className="iclr-y-axis" aria-hidden="true">{ticks.map(tick => <span key={tick}>{number(tick)}</span>)}</div>
         <div className="iclr-plot" role="group" aria-label={`平均分分布，${bins.length} 个${exact ? "精确均分" : "半分区间"}`}>
-          <div className="iclr-grid-lines" aria-hidden="true">{[0, 1, 2, 3, 4].map(i => <span key={i} />)}</div>
+          <div className="iclr-grid-lines" aria-hidden="true">{ticks.map(tick => <span key={tick} />)}</div>
           <div className={`iclr-bars ${exact ? "is-exact" : ""}`} style={{ gridTemplateColumns: `repeat(${bins.length}, minmax(0, 1fr))` }}>
             {/* Exact means use reduced fractions as keys, independent of display rounding. */}
             {bins.map(bin => <button key={bin.bin} type="button"
@@ -125,7 +124,7 @@ export function DashboardContent() {
     ? values.filter(value => value.key !== topic.key) : values.length < 12 ? [...values, topic] : values);
   const [listInput, setListInput] = useState("");
   const query = input.trim(), keywordQuery = keywordInput.trim(), authorQuery = authorInput.trim(), listQuery = listInput.trim();
-  const selectKeyword = value => setKeywordInput(value);
+  const selectKeyword = value => { setKeywordInput(value); setKeywordScope("keywords"); };
   const [status, setStatus] = useState("all");
   const [selection, setSelection] = useState("all");
   const [order, setOrder] = useState("desc");
@@ -179,7 +178,7 @@ export function DashboardContent() {
   </article>;
   return <article className="iclr-dashboard">
     <nav className="iclr-library-nav" aria-label="论文库导航"><a href="/">← 论文库首页</a><div><span>{metadata.label || "ICLR"}</span>{[2025, 2026, 2027].map(year => <a key={year} href={`/${venue}/${year}/`} aria-current={metadata.year === year ? "page" : undefined}>{year}</a>)}</div></nav>
-    <div className="iclr-source-note"><strong>{metadata.conference} {metadata.kind === "journal" ? "期刊" : metadata.kind === "workshop" ? "Workshop" : "主会"}</strong> · {hasRatings ? `原始评分 ${scale.min}–${scale.max} 分 · ` : "来源未提供公开评分 · "}{metadata.source} · 快照 {retrieved}（北京时间）{metadata.officialCoverageVerified ? "" : " · 尚未确认官方全量覆盖"}</div>
+    <div className="iclr-source-note"><strong>{metadata.conference} {metadata.kind === "journal" ? "期刊" : metadata.kind === "workshop" ? "Workshop" : iclr ? "主会" : "会议"}</strong> · {hasRatings ? `原始评分 ${scale.min}–${scale.max} 分 · ` : "来源未提供公开评分 · "}{metadata.source} · 快照 {retrieved}（北京时间）{metadata.officialCoverageVerified ? "" : " · 尚未确认官方全量覆盖"}</div>
     {metadata.coverageMessage && <p className="iclr-author-note">{metadata.coverageMessage}</p>}
     <div className="iclr-filters">
       <label className="iclr-search"><span>搜索论文</span><input type="search" name="paper-search" maxLength={500} value={input} onChange={event => setInput(event.target.value)} placeholder="搜索标题或摘要…" /></label>
@@ -259,7 +258,7 @@ export function DashboardContent() {
               <td><button className="iclr-paper-title" type="button" aria-expanded={expanded === paper.id} aria-controls={expanded === paper.id ? `details-${paper.id}` : undefined}
                 onClick={() => setExpanded(expanded === paper.id ? null : paper.id)}><span className="iclr-expand-arrow" aria-hidden="true">{expanded === paper.id ? "−" : "+"}</span>{paper.title}</button>{keywords[paper.id] !== undefined ? <Keywords text={keywords[paper.id]} onSelect={selectKeyword} /> : <span className="iclr-muted">{keywordError ? "关键词加载失败" : "正在加载关键词…"}</span>}</td>
               <td className="iclr-numeric"><strong className="iclr-average" data-exact-mean={exact ? paper.bin : undefined} title={exact && paper.bin !== null ? `精确均分 ${meanLabel(paper.bin)}` : undefined}>{score(paper.rating_mean)}</strong><span className="iclr-rating-count">{paper.rating_count} 位评分</span></td>
-              <td><Scores paper={paper} positiveThreshold={metadata.year === 2027 ? 3 : 6} /></td><td><span className="iclr-status" data-status={paper.status}>{STATUS_LABELS[paper.status] || paper.status}</span></td>
+              <td><Scores paper={paper} positiveThreshold={iclr && metadata.year === 2027 ? 3 : iclr && metadata.year === 2026 ? 6 : null} /></td><td><span className="iclr-status" data-status={paper.status}>{STATUS_LABELS[paper.status] || paper.status}</span></td>
             </tr>
             {expanded === paper.id && <tr id={`details-${paper.id}`}><td colSpan={4}><PaperDetails paper={paper} metadata={metadata} keywords={keywords[paper.id]} keywordError={keywordError} onKeywordSelect={selectKeyword} /></td></tr>}
           </React.Fragment>)}</tbody>

@@ -7,6 +7,15 @@ export const STATUS_LABELS = {
 
 export const DEFAULT_SCALE = { min: 1, max: 4 };
 
+// Integer counts at equally spaced positions; never round fractional ticks.
+export function countAxis(maximum) {
+  const maximumCount = Math.max(1, maximum);
+  const step = maximumCount <= 4 ? 1 : 10 ** Math.floor(Math.log10(maximumCount / 4));
+  const interval = Math.max(1, Math.ceil(maximumCount / 4 / step) * step);
+  const ceiling = Math.ceil(maximumCount / interval) * interval;
+  return { ceiling, ticks: Array.from({ length: ceiling / interval + 1 }, (_, i) => ceiling - i * interval) };
+}
+
 export function binCount(scale = DEFAULT_SCALE) {
   return 2 * (scale.max - scale.min);
 }
