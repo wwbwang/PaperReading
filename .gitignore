@@ -12,5 +12,14 @@ web/.data-app-offline/
 /iclr20*/papers.csv
 /iclr20*/papers.jsonl
 /iclr20*/reviews.csv
+/iclr20*/review_text/
+/iclr20*/review_text.sqlite3*
 /iclr20*/raw/*
 !/iclr20*/raw/papercopilot_source.json
+
+# Reproducible venue snapshots and raw responses remain in this local repository.
+/library/*/*/raw/
+/library/*/*/papers.jsonl
+/library/*/*/manifest.json
+/library/raw/
+/library/authors/raw/

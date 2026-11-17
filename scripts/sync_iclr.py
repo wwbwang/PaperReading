@@ -18,6 +18,8 @@ from urllib.request import ProxyHandler, Request, build_opener
 REPO = "papercopilot/paperlists"
 DOCS = "https://docs.openreview.net/how-to-guides/data-retrieval-and-modification/how-to-get-all-notes-for-submissions-reviews-rebuttals-etc"
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from scripts.paper_keywords import public_author_names
 REVIEW_FIELDS = ["rating", "confidence", "soundness", "presentation", "contribution", "informativeness"]
 
 
@@ -165,6 +167,7 @@ def normalize_mirror(row, provenance):
     paper = base_paper(forum, row["title"], row.get("abstract") or None,
                        row.get("status"), row.get("track", "main"),
                        "papercopilot", provenance["retrieved_at"])
+    paper["authors"] = public_author_names(row.get("author"))
     fields = ["reviewers", *REVIEW_FIELDS]
     parts = {k: str(row.get(k) or "").split(";") for k in fields}
     count = len(parts["reviewers"]) if row.get("reviewers") else 0
@@ -188,6 +191,10 @@ def normalize_official(row, provenance):
     content = row["content"]
     paper = base_paper(row["id"], value(content, "title"), value(content, "abstract"),
                        value(content, "venue"), "main", "openreview", provenance["retrieved_at"])
+    author_field = content.get("authors", {})
+    public = "everyone" in row.get("readers", ["everyone"]) and (
+        not isinstance(author_field, dict) or "everyone" in author_field.get("readers", ["everyone"]))
+    paper["authors"] = public_author_names(value(content, "authors")) if public else []
     reviews = []
     for reply in row.get("details", {}).get("directReplies", []):
         invitations = reply.get("invitations", [])
@@ -235,7 +242,7 @@ def export(records, provenance, output, track, year=2027):
         writer = csv.DictWriter(handle, fieldnames=fields)
         writer.writeheader()
         for paper in papers:
-            writer.writerow({k: json.dumps(paper[k]) if k == "ratings" else paper[k] for k in fields})
+            writer.writerow({k: json.dumps(paper[k], ensure_ascii=False) if k in {"ratings", "authors"} else paper[k] for k in fields})
     review_fields = ["paper_id", "review_index", "review_id", "reviewer", "review_url"]
     for field in REVIEW_FIELDS:
         review_fields += [field, field + "_raw"]

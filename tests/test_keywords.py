@@ -4,7 +4,7 @@ import sqlite3
 import unittest
 from pathlib import Path
 
-from scripts.paper_keywords import keyword_search_text
+from scripts.paper_keywords import keyword_search_text, public_author_names
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -15,6 +15,8 @@ class KeywordTests(unittest.TestCase):
         self.assertEqual(keyword_search_text("Straße; 图像恢复"), "strasse 图像恢复")
         self.assertEqual(keyword_search_text("%_'"), "")
         self.assertEqual(keyword_search_text(None), "")
+        self.assertEqual(public_author_names("Anonymous;Alice Li;unknown; Alice Li ;Bob Zhang"), ["Alice Li", "Alice Li", "Bob Zhang"])
+        self.assertEqual(public_author_names(["ANONYMOUS AUTHORS", "李明", None]), ["李明"])
 
     def test_every_paper_retains_source_keywords_and_normalized_search(self):
         for year in [2026, 2027]:
@@ -32,7 +34,7 @@ class KeywordTests(unittest.TestCase):
                 database = sqlite3.connect(ROOT / "web/dist" / snapshot["iclr"]["detailBase"].lstrip("/") / "_search.sqlite3")
                 try:
                     self.assertEqual(database.execute("SELECT revision FROM metadata").fetchone()[0], snapshot["iclr"]["revision"])
-                    indexed = {row[0]: row[1:] for row in database.execute("SELECT id, keywords, keyword_search, title_search FROM papers")}
+                    indexed = {row[0]: row[1:] for row in database.execute("SELECT id, keywords, keyword_search, title_search, abstract_search FROM papers")}
                     indexed_authors = {}
                     for paper_id, name, search in database.execute("SELECT paper_id, name, search FROM authors ORDER BY rowid"):
                         indexed_authors.setdefault(paper_id, []).append((name, search))
@@ -41,12 +43,13 @@ class KeywordTests(unittest.TestCase):
                 self.assertEqual(len(indexed), len(rows))
                 self.assertEqual(snapshot["iclr"]["authorPaperCount"], len(indexed_authors))
                 self.assertLessEqual(indexed_authors.keys(), indexed.keys())
+                abstracts = {paper["id"]: paper["abstract"] for paper in map(json.loads, (ROOT / f"iclr{year}/papers.jsonl").open())}
                 for row in rows:
                     self.assertNotIn("keywords", row, "Keywords must stay out of the initial payload")
                     self.assertNotIn("authors", row, "Authors must stay out of the initial payload")
                     original = keywords[row["id"]]
                     self.assertTrue(original, row["id"])
-                    self.assertEqual(indexed[row["id"]], (original, keyword_search_text(original), keyword_search_text(row["title"])), row["id"])
+                    self.assertEqual(indexed[row["id"]], (original, keyword_search_text(original), keyword_search_text(row["title"]), keyword_search_text(abstracts[row["id"]])), row["id"])
                     self.assertEqual(indexed_authors.get(row["id"], []), [(name, keyword_search_text(name)) for name in authors[row["id"]]], row["id"])
 
 

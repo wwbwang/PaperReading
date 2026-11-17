@@ -1,0 +1,386 @@
+{
+  "retrieved_at": "2026-11-17T10:06:42.010186+00:00",
+  "source": {
+    "url": "https://xpixel.group/publication.html",
+    "retrieved_at": "2026-11-17T10:06:42.010186+00:00",
+    "sha256": "b44657d6042d75387bddc86cfe4e75ea1611c16a026d1b53e6d105ba47d08904",
+    "bytes": 331853
+  },
+  "publications": [
+    {
+      "title": "PhotoFramer: Multi-modal Image Composition Instruction",
+      "venue": "IEEE Computer Vision and Pattern Recognition Conference (CVPR), 2025",
+      "url": "https://xpixel.group/2026/03/01/PhotoFramer.html?src=lab"
+    },
+    {
+      "title": "Enhancing Descriptive Image Quality Assessment with A Large-scale Multi-modal Dataset",
+      "venue": "IEEE Transactions on Image Processing (TIP), 2025",
+      "url": "https://xpixel.group/2025/11/01/DepictQA-Wild.html?src=lab"
+    },
+    {
+      "title": "HAT: Hybrid Attention Transformer for Image Restoration",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI), 2025",
+      "url": "https://xpixel.group/2025/10/01/HAT-TPAMI.html?src=lab"
+    },
+    {
+      "title": "Towards Efficient SDRTV-to-HDRTV by Learning from Image Formation",
+      "venue": "IEEE Transactions on Multimedia (TMM), 2025",
+      "url": "https://xpixel.group/2025/09/01/HDRTVNet-plus.html?src=lab"
+    },
+    {
+      "title": "Harnessing diffusion-yielded score priors for image restoration",
+      "venue": "ACM SIGGRAPH Asia, 2025",
+      "url": "https://xpixel.group/2025/08/01/HYPIR.html?src=lab"
+    },
+    {
+      "title": "SpikeVideoFormer: An Efficient Spike-Driven Video Transformer with Hamming Attention and O(T) Complexity",
+      "venue": "International Conference on Machine Learning (ICML), 2025",
+      "url": "https://xpixel.group/2025/07/01/SpikeVideoFormer.html?src=lab"
+    },
+    {
+      "title": "TurboFill: Adapting Few-step Text-to-image Model for Fast Image Inpainting",
+      "venue": "IEEE Computer Vision and Pattern Recognition Conference (CVPR), 2025",
+      "url": "https://xpixel.group/2025/06/02/TurboFill.html?src=lab"
+    },
+    {
+      "title": "Teaching Large Language Models to Regress Accurate Image Quality Scores using Score Distribution",
+      "venue": "IEEE Computer Vision and Pattern Recognition Conference (CVPR), 2025",
+      "url": "https://xpixel.group/2025/06/01/DeQA-Score.html?src=lab"
+    },
+    {
+      "title": "Interpreting Low-level Vision Models with Causal Effect Maps",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI), 2025",
+      "url": "https://xpixel.group/2025/04/01/CEM.html?src=lab"
+    },
+    {
+      "title": "Diffbir: Toward blind image restoration with generative diffusion prior",
+      "venue": "European Conference on Computer Vision (ECCV), 2024",
+      "url": "https://xpixel.group/2024/09/02/Diffbir-ECCV.html?src=lab"
+    },
+    {
+      "title": "Depicting Beyond Scores: Advancing Image Quality Assessment Through Multi-modal Language Models",
+      "venue": "European Conference on Computer Vision (ECCV), 2024",
+      "url": "https://xpixel.group/2024/09/01/Depicting-Beyond-Scores.html?src=lab"
+    },
+    {
+      "title": "A Comparative Study of Image Restoration Networks for General Backbone Network Design",
+      "venue": "The European Conference on Computer Vision(ECCV), 2024",
+      "url": "https://xpixel.group/2024/07/16/X-Restormer.html?src=lab"
+    },
+    {
+      "title": "Unifying Image Processing as Visual Prompting Question Answering",
+      "venue": "International Conference on Machine Learning(ICML), 2024",
+      "url": "https://xpixel.group/2024/02/21/PromptGIP.html?src=lab"
+    },
+    {
+      "title": "Scaling Up to Excellence: Practicing Model Scaling for Photo-Realistic Image Restoration In the Wild",
+      "venue": "Computer Vision and Pattern Recognition(CVPR), 2024",
+      "url": "https://xpixel.group/2023/02/17/SUPIR.html?src=lab"
+    },
+    {
+      "title": "SmartEdit: Exploring Complex Instruction-based Image Editing with Multimodal Large Language Models",
+      "venue": "Computer Vision and Pattern Recognition(CVPR), 2024",
+      "url": "https://xpixel.group/2023/02/12/SmartEdit.html?src=lab"
+    },
+    {
+      "title": "SEAL: A Framework for Systematic Evaluation of Real-World Super-Resolution",
+      "venue": "International Conference on Learning Representations (ICLR spotlight), 2024",
+      "url": "https://xpixel.group/2023/02/07/SEAL.html?src=lab"
+    },
+    {
+      "title": "Real-World Image Super-Resolution as Multi-Task Learning",
+      "venue": "Conference and Workshop on Neural Information Processing Systems(NeurIPS), 2023",
+      "url": "https://xpixel.group/2023/01/09/TGsr.html?src=lab"
+    },
+    {
+      "title": "Networks are Slacking Off: Understanding Generalization Problem in Image Deraining",
+      "venue": "Conference and Workshop on Neural Information Processing Systems(NeurIPS), 2023",
+      "url": "https://xpixel.group/2023/01/06/Networks-are-Slacking-Off-Understanding-Generalization-Problem-in-Image-Deraining.html?src=lab"
+    },
+    {
+      "title": "Evaluating the Generalization Ability of Super-Resolution Networks",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence(TPAMI), 2023",
+      "url": "https://xpixel.group/2023/01/05/Evaluating-the-Generalization-Ability-of-Super-Resolution-Networks.html?src=lab"
+    },
+    {
+      "title": "DeSRA: Detect and Delete the Artifacts of GAN-based Real-World Super-Resolution Models",
+      "venue": "International Conference on Machine Learning (ICML), 2023",
+      "url": "https://xpixel.group/2022/10/21/DeSRA.html?src=lab"
+    },
+    {
+      "title": "DegAE: A New Pretraining Paradigm for Low-level Vision",
+      "venue": "Computer Vision and Pattern Recognition (CVPR highlight), 2023",
+      "url": "https://xpixel.group/2022/10/20/DegAE.html?src=lab"
+    },
+    {
+      "title": "Activating More Pixels in Image Super-Resolution Transformer",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2023",
+      "url": "https://xpixel.group/2022/10/12/HAT.html?src=lab"
+    },
+    {
+      "title": "OSRT: Omnidirectional Image Super-Resolution with Distortion-aware Transformer",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2023",
+      "url": "https://xpixel.group/2022/10/11/OSRT.html?src=lab"
+    },
+    {
+      "title": "Temporally Consistent Video Colorization with Deep Feature Propagation and Self-regularization Learning",
+      "venue": "Computational Visual Media (CVMJ), 2023",
+      "url": "https://xpixel.group/2022/10/10/TCVC.html?src=lab"
+    },
+    {
+      "title": "Mitigating Artifacts in Real-World Video Super-Resolution Models",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI), 2022",
+      "url": "https://xpixel.group/2022/09/24/Mitigating-Artifacts-in-Real-World-Video-Super-Resolution-Models.html?src=lab"
+    },
+    {
+      "title": "Rethinking Learning-based Demosaicing, Denoising, and Super-Resolution Pipeline",
+      "venue": "IEEE International Conference on Computational Photography (ICCP), 2022",
+      "url": "https://xpixel.group/2022/09/23/.Rethinking-Learning-based-Demosaicing,-Denoising,-and-Super-Resolution-Pipelinemd.html?src=lab"
+    },
+    {
+      "title": "UDC-UNet: Under-Display Camera Image Restoration via U-shape Dynamic Network",
+      "venue": "The European Conference on Computer Vision, MIPI Workshop (ECCVW), 2022",
+      "url": "https://xpixel.group/2022/09/22/UDC-UNet.html?src=lab"
+    },
+    {
+      "title": "Efficient Image Super-Resolution using Vast-Receptive-Field Attention",
+      "venue": "The European Conference on Computer Vision Workshop (ECCVW), 2022",
+      "url": "https://xpixel.group/2022/09/21/Efficient-Image-Super-Resolution-using-Vast-Receptive-Field-Attention.html?src=lab"
+    },
+    {
+      "title": "AnimeRun: 2D Animation Visual Correspondence from Open Source 3D Movies",
+      "venue": "NeurIPS 2022 Datasets and Benchmarks Track",
+      "url": "https://xpixel.group/2022/09/20/AnimeRun.html?src=lab"
+    },
+    {
+      "title": "Rethinking Alignment in Video Super-Resolution Transformers",
+      "venue": "Conference and Workshop on Neural Information Processing Systems(NeurIPS), 2022",
+      "url": "https://xpixel.group/2022/09/19/Rethinking-Alignment-in-Video-Super-Resolution-Transformers.html?src=lab"
+    },
+    {
+      "title": "Blind Image Super-Resolution: A Survey and Beyond",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence(TPAMI), 2022",
+      "url": "https://xpixel.group/2022/08/30/Blind-Image-Super-Resolution-A-Survey-and-Beyond.html?src=lab"
+    },
+    {
+      "title": "Very Lightweight Photo Retouching Network with Conditional Sequential Modulation",
+      "venue": "IEEE Transactions on Multimedia (TMM), 2022",
+      "url": "https://xpixel.group/2022/07/24/Very-Lightweight-Photo-Retouching-Network-with-Conditional-Sequential-Modulation.html?src=lab"
+    },
+    {
+      "title": "Fine-grained Face Editing via Personalized Spatial-aware Affine Modulation",
+      "venue": "IEEE Transactions on Multimedia (TMM), 2022",
+      "url": "https://xpixel.group/2022/06/08/Fine-grained-Face-Editing-via-Personalized-Spatial-aware-Affine-Modulation.html?src=lab"
+    },
+    {
+      "title": "VQFR: Blind Face Restoration with Vector-Quantized Dictionary and Parallel Decoder",
+      "venue": "The European Conference on Computer Vision (ECCV), 2022",
+      "url": "https://xpixel.group/2022/06/06/VQFR.html?src=lab"
+    },
+    {
+      "title": "NTIRE 2022 Challenge on Perceptual Image Quality Assessment",
+      "venue": "Computer Vision and Pattern Recognition Workshop (CVPRW), 2022",
+      "url": "https://xpixel.group/2022/06/05/NTIRE-2022-Challenge-on-Perceptual-Image-Quality-Assessment.html?src=lab"
+    },
+    {
+      "title": "Blueprint Separable Residual Network for Efficient Image Super-Resolution",
+      "venue": "Computer Vision and Pattern Recognition Workshop (CVPRW), 2022",
+      "url": "https://xpixel.group/2022/06/03/Blueprint-Separable-Residual-Network-for-Efficient-Image-Super-Resolution.html?src=lab"
+    },
+    {
+      "title": "Metric Learning based Interactive Modulation for Real-World Super-Resolution",
+      "venue": "The European Conference on Computer Vision (ECCV), 2022",
+      "url": "https://xpixel.group/2022/05/03/MMRealSR.html?src=lab"
+    },
+    {
+      "title": "RepSR: Training Efficient VGG-style Super-Resolution Networks with Structural Re-Parameterization and Batch Normalization",
+      "venue": "ACM International Conference on Multimedia(ACM MM), 2022",
+      "url": "https://xpixel.group/2022/05/03/RepSR.html?src=lab"
+    },
+    {
+      "title": "A Closer Look at Blind Super-Resolution: Degradation Models, Baselines, and Performance Upper Bounds",
+      "venue": "Computer Vision and Pattern Recognition Workshop (CVPRW), 2022",
+      "url": "https://xpixel.group/2022/05/03/A-Closer-Look-at-Blind-Super-Resolution-Degradation-Models-Baselines-and-Performance-Upper-Bounds.html?src=lab"
+    },
+    {
+      "title": "VFHQ: A High-Quality Dataset and Benchmark for Video Face Super-Resolution",
+      "venue": "Computer Vision and Pattern Recognition Workshop (CVPRW), 2022",
+      "url": "https://xpixel.group/2022/05/02/VFHQ.html?src=lab"
+    },
+    {
+      "title": "Blind Image Restoration Based on Cycle-Consistent Network",
+      "venue": "IEEE Transactions on Multimedia (TMM), 2022",
+      "url": "https://xpixel.group/2022/03/02/Blind-Image-Restoration-Based-on-Cycle-Consistent-Network.html?src=lab"
+    },
+    {
+      "title": "GCFSR: a Generative and Controllable Face Super Resolution Method Without Facial and GAN Priors",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2022",
+      "url": "https://xpixel.group/2022/03/01/GCFSR.html?src=lab"
+    },
+    {
+      "title": "Reflash Dropout in Image Super-Resolution",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2022",
+      "url": "https://xpixel.group/2021/12/22/Reflash-Dropout-in-Image-Super-Resolution.html?src=lab"
+    },
+    {
+      "title": "Finding Discriminative Filters for Specific Degradations in Blind Super-Resolution",
+      "venue": "Conference and Workshop on Neural Information Processing Systems (NeurIPS Spotlight), 2021",
+      "url": "https://xpixel.group/2021/08/03/Finding-Discriminative-Filters-for-Specific-Degradations-in-Blind-Super-Resolution.html?src=lab"
+    },
+    {
+      "title": "A New Journey from SDRTV to HDRTV",
+      "venue": "International Conference on Computer Vision (ICCV), 2021",
+      "url": "https://xpixel.group/2021/07/25/A-New-Journey-from-SDRTV-to-HDRTV.html?src=lab"
+    },
+    {
+      "title": "Interactive Multi-Dimension Modulation for Image Restoration",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI), 2021",
+      "url": "https://xpixel.group/2021/07/24/Interactive-Multi-Dimension-Modulation-for-Image-Restoration.html?src=lab"
+    },
+    {
+      "title": "Path-Restore: Learning Network Path Selection for Image Restoration",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI), 2021",
+      "url": "https://xpixel.group/2021/07/22/Path-Restore-Learning-Network-Path-Selection-for-Image-Restoration.html?src=lab"
+    },
+    {
+      "title": "Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data",
+      "venue": "International Conference on Computer Vision Workshop (ICCVW), 2021",
+      "url": "https://xpixel.group/2021/07/21/Real-ESRGAN-Training-Real-World-Blind-Super-Resolution-with-Pure-Synthetic-Data.html?src=lab"
+    },
+    {
+      "title": "RankSRGAN: Super Resolution Generative Adversarial Networks with Learning to Rank",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI), 2021",
+      "url": "https://xpixel.group/2021/07/21/RankSRGAN-Super-Resolution-Generative-Adversarial-Networks-with-Learning-to-Rank.html?src=lab"
+    },
+    {
+      "title": "Toward Interactive Modulation for Photo-Realistic Image Restoration",
+      "venue": "Computer Vision and Pattern Recognition Workshop (CVPRW), 2021",
+      "url": "https://xpixel.group/2021/05/09/Toward-Interactive-Modulation-for-Photo-Realistic-Image-Restoration.html?src=lab"
+    },
+    {
+      "title": "NTIRE 2021 Challenge on Perceptual Image Quality Assessment",
+      "venue": "Computer Vision and Pattern Recognition, NTIRE Workshop (CVPRW), 2021",
+      "url": "https://xpixel.group/2021/03/23/NTIRE-2021-Challenge-on-Perceptual-Image-Quality-Assessment.html?src=lab"
+    },
+    {
+      "title": "HDRUNet: Single Image HDR Reconstruction with Denoising and Dequantization",
+      "venue": "Computer Vision and Pattern Recognition, NTIRE Workshop (CVPRW), 2021",
+      "url": "https://xpixel.group/2021/03/23/HDRUNet-Single-Image-HDR-Reconstruction-with-Denoising-and-Dequantization.html?src=lab"
+    },
+    {
+      "title": "BasicVSR: The Search for Essential Components in Video Super-Resolution and Beyond",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2021",
+      "url": "https://xpixel.group/2021/03/23/BasicVSR-The-Search-for-Essential-Components-in-Video-Super-Resolution-and-Beyond.html?src=lab"
+    },
+    {
+      "title": "ClassSR: A General Framework to Accelerate Super-Resolution Networks by Data Characteristic",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2021",
+      "url": "https://xpixel.group/2021/03/23/ClassSR-A-General-Framework-to-Accelerate-Super-Resolution-Networks-by-Data-Characteristic.html?src=lab"
+    },
+    {
+      "title": "Interpreting Super-Resolution Networks with Local Attribution Maps",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2021",
+      "url": "https://xpixel.group/2021/03/23/Interpreting-Super-Resolution-Networks-with-Local-Attribution-Maps.html?src=lab"
+    },
+    {
+      "title": "Understanding Deformable Alignment in Video Super-Resolution",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI), 2021",
+      "url": "https://xpixel.group/2021/02/01/Understanding-Deformable-Alignment-in-Video-Super-Resolution.html?src=lab"
+    },
+    {
+      "title": "Enhanced Quadratic Video Interpolation",
+      "venue": "The European Conference on Computer Vision, AIM Workshop (ECCVW), 2020",
+      "url": "https://xpixel.group/2020/07/25/Enhanced-Quadratic-Video-Interpolation.html?src=lab"
+    },
+    {
+      "title": "Efficient Image Super-Resolution Using Pixel Attention",
+      "venue": "The European Conference on Computer Vision, AIM Workshop (ECCVW), 2020",
+      "url": "https://xpixel.group/2020/07/25/Efficient-Image-Super-Resolution-Using-Pixel-Attention.html?src=lab"
+    },
+    {
+      "title": "Conditional Sequential Modulation for Efficient Global Image Retouching",
+      "venue": "The European Conference on Computer Vision (ECCV), 2020",
+      "url": "https://xpixel.group/2020/07/25/Conditional-Sequential-Modulation-for-Efficient-Global-Image-Retouching.html?src=lab"
+    },
+    {
+      "title": "Interactive Multi-dimension Modulation with Dynamic Controllable Residual Learning for Image Restoration",
+      "venue": "The European Conference on Computer Vision (ECCV), 2020",
+      "url": "https://xpixel.group/2020/07/25/Multi-Dimension-Modulation-for-Image-Restoration-with-Dynamic-Controllable-Residual-Learning.html?src=lab"
+    },
+    {
+      "title": "PIPAL: a Large-Scale Image Quality Assessment Dataset for Perceptual Image Restoration",
+      "venue": "The European Conference on Computer Vision (ECCV), 2020",
+      "url": "https://xpixel.group/2020/07/25/PIPAL-a-Large-Scale-Image-Quality-Assessment-Dataset-for-Perceptual-Image-Restoration.html?src=lab"
+    },
+    {
+      "title": "RankSRGAN: Generative Adversarial Networks with Ranker for Image Super-Resolution",
+      "venue": "International Conference on Computer Vision, oral (ICCV oral), 2019",
+      "url": "https://xpixel.group/2019/06/25/RankSRGAN-Generative-Adversarial-Networks-with-Ranker-for-Image-Super-Resolution.html?src=lab"
+    },
+    {
+      "title": "EDVR: Video Restoration With Enhanced Deformable Convolutional Networks",
+      "venue": "Computer Vision and Pattern Recognition, NTIRE Workshop (CVPRW), 2019",
+      "url": "https://xpixel.group/2019/06/24/EDVR-Video-Restoration-With-Enhanced-Deformable-Convolutional-Networks.html?src=lab"
+    },
+    {
+      "title": "Modulating Image Restoration With Continual Levels via Adaptive Feature Modification Layers",
+      "venue": "Computer Vision and Pattern Recognition, oral (CVPR oral), 2019",
+      "url": "https://xpixel.group/2019/06/23/Modulating-Image-Restoration-With-Continual-Levels-via-Adaptive-Feature-Modification-Layers.html?src=lab"
+    },
+    {
+      "title": "Suppressing Model Overfitting for Image Super-Resolution Networks",
+      "venue": "Computer Vision and Pattern Recognition, NTIRE Workshop (CVPRW), 2019",
+      "url": "https://xpixel.group/2019/06/22/Suppressing-Model-Overfitting-for-Image-Super-Resolution-Networks.html?src=lab"
+    },
+    {
+      "title": "Blind Super-Resolution With Iterative Kernel Correction",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2019",
+      "url": "https://xpixel.group/2019/06/20/Blind-Super-Resolution-With-Iterative-Kernel-Correction.html?src=lab"
+    },
+    {
+      "title": "Deep Network Interpolation for Continuous Imagery Effect Transition",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2019",
+      "url": "https://xpixel.group/2019/06/19/Deep-Network-Interpolation-for-Continuous-Imagery-Effect-Transition.html?src=lab"
+    },
+    {
+      "title": "ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks",
+      "venue": "The European Conference on Computer Vision Workshop (ECCVW), 2018",
+      "url": "https://xpixel.group/2018/09/06/ESRGAN-Enhanced-Super-Resolution-Generative-Adversarial-Networks.html?src=lab"
+    },
+    {
+      "title": "Recovering Realistic Texture in Image Super-Resolution by Deep Spatial Feature Transform",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2018",
+      "url": "https://xpixel.group/2018/06/21/Recovering-Realistic-Texture-in-Image-Super-Resolution-by-Deep-Spatial-Feature-Transform.html?src=lab"
+    },
+    {
+      "title": "Crafting a Toolchain for Image Restoration by Deep Reinforcement Learning",
+      "venue": "Computer Vision and Pattern Recognition (CVPR), 2018",
+      "url": "https://xpixel.group/2018/06/20/Crafting-a-Toolchain-for-Image-Restoration-by-Deep-Reinforcement-Learning.html?src=lab"
+    },
+    {
+      "title": "BeautyGAN: Instance-level Facial Makeup Transfer with Deep Generative Adversarial Network",
+      "venue": "The 26th ACM international conference on Multimedia (ACM MM), 2018",
+      "url": "https://xpixel.group/2018/06/20/BeautyGAN-Instance-level-Facial-Makeup-Transfer-with-Deep-Generative-Adversarial-Network.html?src=lab"
+    },
+    {
+      "title": "Unsupervised Image Super-Resolution Using Cycle-in-Cycle Generative Adversarial Networks",
+      "venue": "Computer Vision and Pattern Recognition, NTIRE Workshop (CVPRW), 2018",
+      "url": "https://xpixel.group/2018/03/27/Unsupervised-Image-Super-Resolution-Using-Cycle-in-Cycle-Generative-Adversarial-Networks.html?src=lab"
+    },
+    {
+      "title": "Accelerating the Super-Resolution Convolutional Neural Network",
+      "venue": "The European Conference on Computer Vision (ECCV), 2016",
+      "url": "https://xpixel.group/2016/09/27/Accelerating-the-Super-Resolution-Convolutional-Neural-Network.html?src=lab"
+    },
+    {
+      "title": "Image Super-Resolution Using Deep Convolutional Networks",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence(TPAMI), 2016",
+      "url": "https://xpixel.group/2016/02/27/Image-Super-Resolution-Using-Deep-Convolutional-Networks.html?src=lab"
+    },
+    {
+      "title": "Learning a Deep Convolutional Network for Image Super-Resolution",
+      "venue": "The European Conference on Computer Vision (ECCV), 2014",
+      "url": "https://xpixel.group/2014/03/27/Learning-a-Deep-Convolutional-Network-for-Image-Super-Resolution.html?src=lab"
+    }
+  ]
+}

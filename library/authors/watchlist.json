@@ -1,0 +1,19 @@
+{
+  "authors": [
+    {
+      "id": "chao-dong-siat",
+      "name": "董超",
+      "name_en": "Chao Dong",
+      "initials": "董",
+      "affiliation": "中国科学院深圳先进技术研究院",
+      "department": "多媒体集成技术研究中心 · XPixel",
+      "topics": ["图像与视频超分辨率", "图像复原", "画质增强"],
+      "aliases": ["Chao Dong", "董超"],
+      "profile_url": "https://people.ucas.ac.cn/~chaodong",
+      "team_url": "https://xpixel.group/",
+      "publications_url": "https://xpixel.group/publication.html",
+      "identity_verified_at": "2026-11-17",
+      "identity_note": "国科大导师主页确认董超的先进院身份；正式公开作者名单中的姓名须与团队已发表论文标题精确关联后，才计为已核实。"
+    }
+  ]
+}

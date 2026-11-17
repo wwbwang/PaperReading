@@ -8,20 +8,21 @@ import json
 import shutil
 import sqlite3
 import subprocess
+import sys
 import tempfile
 from fractions import Fraction
 from pathlib import Path
 
-from paper_keywords import keyword_search_text
-
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from scripts.paper_keywords import keyword_search_text, public_author_names
 WEB = ROOT / "web"
 PLUGIN = Path("/root/.codex/plugins/cache/openai-curated-remote/data-analytics/1.2.0")
 ARTIFACT_IDS = {2026: "dashboard:paperreading-iclr-2026",
                 2027: 'dashboard:f4d4d306-d1e0-4b7f-a31d-63c7e8c00469'}
 REVIEW_FIELDS = ["rating", "confidence", "soundness", "presentation", "contribution", "informativeness"]
 # Change this when immutable detail payloads change, even if the source snapshot does not.
-WEB_SCHEMA = "authors-v1"
+WEB_SCHEMA = "abstract-search-v3"
 
 
 def snapshot(year=2027, assets=None):
@@ -42,7 +43,7 @@ def snapshot(year=2027, assets=None):
         for row in json.loads(raw):
             paper_id = row.get("openreview_forum") or row["id"]
             keywords[paper_id] = row.get("keywords") or ""
-            authors[paper_id] = [name.strip() for name in (row.get("author") or "").split(";") if name.strip()]
+            authors[paper_id] = public_author_names(row.get("author"))
         del raw
     rows, available_fields, chunks = [], set(), {}
     author_paper_count = 0
@@ -52,7 +53,7 @@ def snapshot(year=2027, assets=None):
         database_path = assets / "_search.sqlite3"
         database_path.unlink(missing_ok=True)
         database = sqlite3.connect(database_path)
-        database.execute("CREATE TABLE papers (id TEXT PRIMARY KEY, search TEXT NOT NULL, keywords TEXT NOT NULL, keyword_search TEXT NOT NULL, title_search TEXT NOT NULL)")
+        database.execute("CREATE TABLE papers (id TEXT PRIMARY KEY, search TEXT NOT NULL, keywords TEXT NOT NULL, keyword_search TEXT NOT NULL, title_search TEXT NOT NULL, abstract_search TEXT NOT NULL)")
         database.execute("CREATE TABLE authors (paper_id TEXT NOT NULL, name TEXT NOT NULL, search TEXT NOT NULL)")
         database.execute("CREATE INDEX authors_paper_id ON authors (paper_id)")
         database.execute("CREATE TABLE metadata (revision TEXT NOT NULL)")
@@ -68,7 +69,7 @@ def snapshot(year=2027, assets=None):
             "id", "title", "status", "rating_mean",
         ]}
         paper_keywords = paper.get("keywords", keywords.get(paper["id"], ""))
-        paper_authors = paper.get("authors", authors.get(paper["id"], []))
+        paper_authors = public_author_names(paper.get("authors", authors.get(paper["id"], [])))
         author_paper_count += bool(paper_authors)
         row["rating_count"] = len(scores)
         if scores and year == 2027:
@@ -88,8 +89,8 @@ def snapshot(year=2027, assets=None):
         ], separators=(",", ":"))
         if assets is not None:
             chunks.setdefault(chunk, {})[paper["id"]] = detail
-            database.execute("INSERT INTO papers VALUES (?, ?, ?, ?, ?)",
-                             (paper["id"], (paper["title"] + "\n" + paper["abstract"]).lower(), paper_keywords, keyword_search_text(paper_keywords), keyword_search_text(paper["title"])))
+            database.execute("INSERT INTO papers VALUES (?, ?, ?, ?, ?, ?)",
+                             (paper["id"], (paper["title"] + "\n" + paper["abstract"]).lower(), paper_keywords, keyword_search_text(paper_keywords), keyword_search_text(paper["title"]), keyword_search_text(paper["abstract"])))
             database.executemany("INSERT INTO authors VALUES (?, ?, ?)",
                                  [(paper["id"], name, keyword_search_text(name)) for name in paper_authors])
         rows.append(row)
@@ -117,7 +118,7 @@ def snapshot(year=2027, assets=None):
         "evidenceFlow": [
             {"title": "原始来源", "detail": source_label + "；" + source_url},
             {"title": "本地核对", "detail": "scripts/validate_iclr.py 核对原始镜像与论文导出；官方接口受限，镜像覆盖尚未经官方全量核对。"},
-            {"title": "网站变换", "detail": "scripts/build_iclr_web.py 按指定年份加载主会记录，使用原始总评分求均值；2027 按约分后的精确均分分类，2026 按半分区间分类；关键词和作者保留原始镜像文本，关键词与标题支持联合或单字段部分词匹配，作者查询的所有词需命中同一作者；使用 Unicode 归一化并忽略大小写和分隔符；浏览器交集筛选后重新计数。"},
+            {"title": "网站变换", "detail": "scripts/build_iclr_web.py 按指定年份加载主会记录，使用原始总评分求均值；2027 按精确均分分类，2026 按半分区间分类。模糊查询默认覆盖标题、关键词和摘要，多词须全部命中；使用 Unicode 归一化并忽略大小写和分隔符。作者仅使用会议公开名单，忽略 Anonymous 等占位值；不从预印本或标题推断作者。作者查询的所有词需命中同一作者；浏览器交集筛选后重新计数。"},
         ],
     }
     return {
@@ -142,10 +143,17 @@ def write_json(path, value):
 def compress(directory):
     for path in directory.rglob("*"):
         if path.suffix in (".json", ".html", ".js", ".css"):
-            path.with_name(path.name + ".gz").write_bytes(gzip.compress(path.read_bytes(), compresslevel=6, mtime=0))
+            compressed = path.with_name(path.name + ".gz")
+            if not compressed.exists() or compressed.stat().st_mtime_ns < path.stat().st_mtime_ns:
+                temporary = compressed.with_suffix(".gz.tmp")
+                temporary.write_bytes(gzip.compress(path.read_bytes(), compresslevel=6, mtime=0))
+                temporary.replace(compressed)
 
 
 def build_portal():
+    if (ROOT / "library").is_dir():
+        from scripts.build_library import portal
+        return portal()
     entries, cards = [], []
     for year in [2027, 2026]:
         directory = WEB / "dist" / "iclr" / str(year)
@@ -195,7 +203,7 @@ def main():
             # assets safe outside that output while compiling the next year.
             saved = Path(temporary) / "saved"
             saved.mkdir()
-            for name in ["iclr", "data"]:
+            for name in [p.name for p in (WEB / "dist").iterdir() if p.is_dir()]:
                 old = WEB / "dist" / name
                 if old.exists():
                     shutil.move(str(old), saved / name)

@@ -24,6 +24,21 @@ def record(**overrides):
 
 
 class ScoresTest(unittest.TestCase):
+    def test_public_authors_survive_official_and_mirror_normalization(self):
+        row = {"id": "abc123", "readers": ["everyone"], "content": {
+            "title": {"value": "Paper"}, "abstract": {"value": "Text"},
+            "authors": {"value": [" Alice Li ", "李明", "Alice Li"], "readers": ["everyone"]}}}
+        paper, _ = sync.normalize_official(row, PROVENANCE)
+        self.assertEqual(paper["authors"], ["Alice Li", "李明", "Alice Li"])
+        row["content"]["authors"]["readers"] = ["Conference/Authors"]
+        self.assertEqual(sync.normalize_official(row, PROVENANCE)[0]["authors"], [])
+        row["content"]["authors"] = {"value": ["Anonymous"]}
+        self.assertEqual(sync.normalize_official(row, PROVENANCE)[0]["authors"], [])
+        row["content"]["authors"] = {"value": ["Alice Li"]}
+        row["readers"] = ["Conference/Authors"]
+        self.assertEqual(sync.normalize_official(row, PROVENANCE)[0]["authors"], [])
+        self.assertEqual(sync.normalize_mirror(record(author="Alice Li;Anonymous; Bob Zhang"), PROVENANCE)[0]["authors"], ["Alice Li", "Bob Zhang"])
+
     def test_zero_and_missing_remain_distinct_and_aligned(self):
         paper, reviews = sync.normalize_mirror(record(), PROVENANCE)
         self.assertEqual([r["rating"] for r in reviews], [0, None, 6])
