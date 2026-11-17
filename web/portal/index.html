@@ -4,22 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="按会议与年份浏览 AI 论文、摘要和审稿评分。">
+  <meta name="description" content="按会议、期刊与年份浏览 CV / AI 论文，跟踪关注作者的公开成果。">
   <title>PaperReading</title>
   <link rel="stylesheet" href="/library.css">
+  <script type="module" src="/portal.js"></script>
 </head>
-<body>
-  <header class="topbar"><a class="brand" href="/" aria-label="PaperReading 首页"><span class="brand-icon" aria-hidden="true">P<span>r</span></span>PaperReading</a><span class="topbar-label">你的论文阅读入口</span></header>
+<body class="portal">
+  <header class="topbar"><a class="brand" href="/"><span class="brand-icon" aria-hidden="true">P<span>r</span></span>PaperReading</a><nav aria-label="主导航"><a href="#library" aria-current="page">论文库</a><a href="/authors/">作者跟踪 ↗</a></nav></header>
   <main>
-    <section class="intro"><div class="eyebrow"><span></span> PAPER LIBRARY</div><h1>从一个问题，<br>读到一篇好论文。</h1><p>按会议与年份探索论文，查看摘要、审稿评分与分数分布。<br class="desktop-break">让下一篇阅读，有迹可循。</p></section>
-    <section class="library" aria-labelledby="library-title"><div class="section-heading"><h2 id="library-title">会议论文库</h2><span>先选会议，再选年份</span></div>
-      <article class="conference"><div class="conference-header"><div><span class="conference-tag">表示学习 · 深度学习</span><h2>ICLR</h2><p>International Conference on Learning Representations</p></div><span class="availability"><span></span>已收录 2 个年份</span></div>
-        <div class="year-grid">__YEAR_CARDS__</div>
-        <p class="conference-note">各年份使用原始评分尺度；2027 按精确均分展示，2026 按 0.5 分分档。投稿状态与录用结果请以对应年份标注为准。</p>
-      </article>
-      <div class="upcoming" aria-label="待收录会议"><span>后续论文库</span><span>NeurIPS <small>待收录</small></span><span>CVPR <small>待收录</small></span><span>ICML <small>待收录</small></span></div>
+    <section class="welcome" aria-labelledby="welcome-title">
+      <div class="intro"><div class="eyebrow">CV / AI · 2025–2027</div><h1 id="welcome-title">从一篇论文，开始探索。</h1><p>浏览会议与期刊，阅读公开审稿，跟进关注作者。</p><nav class="quick-links" aria-label="ICLR 快捷入口"><span>快捷进入</span><a href="/iclr/2027/">ICLR 2027 <span aria-hidden="true">→</span></a><a href="/iclr/2026/">ICLR 2026 <span aria-hidden="true">→</span></a></nav></div>
+      <aside class="tracking-preview" aria-labelledby="tracking-title"><div class="section-heading"><h2 id="tracking-title">关注的作者</h2><a href="/authors/">管理关注 →</a></div><div id="tracked-authors"><p class="muted">正在读取关注作者…</p></div><p class="small-note">仅关联公开作者信息</p></aside>
     </section>
-    <footer><span>PaperReading</span><p>当前数据来自 Paper Copilot 公开镜像；尚未确认官方全量覆盖。<br>论文详情页提供 OpenReview 和 PDF 原文链接。</p></footer>
+    <section class="library" id="library" aria-labelledby="library-title">
+      <div class="section-heading library-heading"><div><h2 id="library-title">论文库</h2><span class="section-description">按来源与年份浏览</span></div><span id="venue-count" aria-live="polite">23 个来源</span></div>
+      <div class="library-toolbar"><div class="category-tabs" role="group" aria-label="来源类型"><button type="button" data-kind="all" aria-pressed="true">全部 <span>23</span></button><button type="button" data-kind="conference" aria-pressed="false">会议 <span>14</span></button><button type="button" data-kind="journal" aria-pressed="false">期刊 <span>7</span></button><button type="button" data-kind="workshop" aria-pressed="false">Workshop <span>2</span></button></div><div class="library-controls"><label class="venue-search"><span class="sr-only">按名称查找会议或期刊</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="venue-search" type="search" placeholder="查找会议 / 期刊" autocomplete="off"></label><label><span class="sr-only">年份</span><select id="library-year"><option value="all">全部年份</option><option>2027</option><option>2026</option><option>2025</option></select></label></div></div>
+      <div class="library-context"><p>数量为本地收录范围，<span>“—”表示投稿总量未知。</span></p><button id="reset-library" type="button" hidden>重置筛选 ×</button></div>
+      <div class="venue-grid">__VENUE_CARDS__</div>
+      <div id="no-venues" class="empty-state" hidden><strong>未找到匹配的来源</strong><p>试试会议简称，或重置筛选查看全部来源。</p></div>
+      <details class="data-guide"><summary>数据范围与数量说明</summary><p>会议及 Workshop 按“录取 / 总论文”展示本地收录范围；总论文包含已收录的录取、拒稿、撤稿及待决记录，不代表官方全量投稿。“待定”表示当前尚无已确认录取记录且仍有未决状态；“—”表示仅取得录用论文列表，投稿总量未知。未公开的数据不记为零，不据此计算官方录取率。</p><p>“暂未获取”表示当前本地快照没有记录，不代表没有论文。每个年份内可查看来源、字段覆盖与评分信息。</p></details>
+    </section>
+    <footer><span>PaperReading · 本地论文库</span><p>来源：官方论文集、出版机构元数据及标注来源的公开镜像。<br>论文库更新后同步作者跟踪；已读与关注设置保存在当前浏览器。</p></footer>
   </main>
 </body>
 </html>
