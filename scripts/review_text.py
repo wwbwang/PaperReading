@@ -75,6 +75,17 @@ def public_notes(notes, year, paper_id):
     return result
 
 
+def reviewer_alias(signatures):
+    aliases = set()
+    for signature in signatures:
+        match = re.search(r"/(?:Anon)?Reviewer_([^/]+)$", signature)
+        if match:
+            aliases.add(match.group(1))
+        elif "/Reviewers/" in signature:
+            aliases.add(signature.rsplit("/", 1)[-1])
+    return next(iter(aliases)) if len(aliases) == 1 else None
+
+
 def normalize(notes, year, paper_id):
     """Keep only public official reviews for this forum and venue, keyed by alias."""
     reviews = []
@@ -84,13 +95,6 @@ def normalize(notes, year, paper_id):
         if not note_id or note_id in seen:
             continue
         seen.add(note_id)
-        aliases = []
-        for signature in note.get("signatures", []):
-            match = re.search(r"/(?:Anon)?Reviewer_([^/]+)$", signature)
-            if match:
-                aliases.append(match.group(1))
-            elif "/Reviewers/" in signature:
-                aliases.append(signature.rsplit("/", 1)[-1])
         content = note.get("content", {})
         sections = []
         for field, raw_value in content.items():
@@ -100,7 +104,7 @@ def normalize(notes, year, paper_id):
             text = unwrap(raw_value)
             if isinstance(text, str) and text.strip():
                 sections.append({"field": field, "label": label, "text": text})
-        reviews.append({"id": note_id, "reviewer": aliases[0] if len(set(aliases)) == 1 else None,
+        reviews.append({"id": note_id, "reviewer": reviewer_alias(note.get("signatures", [])),
                         "url": f"https://openreview.net/forum?id={paper_id}&noteId={note_id}",
                         "rating": unwrap(content.get("rating")), "modified_at": note.get("mdate"),
                         "sections": sections})
@@ -163,11 +167,11 @@ def retrieve(year, paper_id, root=ROOT, *, refresh=False, input_path=None):
     raw_dir = root / f"iclr{year}/raw/review_text"
     # Local cached reviews must not queue behind unrelated network requests.
     cached, cached_at = cached_review(year, paper_id, root)
-    if not refresh and input_path is None and cached and time.time() - cached_at < 21600:
+    if not refresh and input_path is None and cached:
         return cached, 200
     with _guard:
         cached, cached_at = cached_review(year, paper_id, root)
-        if not refresh and input_path is None and cached and time.time() - cached_at < 21600:
+        if not refresh and input_path is None and cached:
             return cached, 200
         if input_path is None and time.time() < _rate_limited_until:
             if cached and cached.get("status") == "available":

@@ -193,12 +193,21 @@ class ReviewTextTests(unittest.TestCase):
         with patch.object(review_text.time, "time", return_value=time.time() + 21601), \
                 patch.object(review_text, "build_opener") as opener:
             opener.return_value.open.side_effect = TimeoutError()
-            result, status = review_text.retrieve(2027, "paper-a", self.root)
+            result, status = review_text.retrieve(2027, "paper-a", self.root, refresh=True)
         self.assertEqual(status, 200)
         self.assertTrue(result["stale"])
         self.assertEqual(result["reviews"], original["reviews"])
         self.assertEqual(result["retrieved_at"], original["retrieved_at"])
         self.assertEqual(json.loads(cache.read_text()), original)
+
+    def test_old_local_cache_never_triggers_network_on_read(self):
+        (self.root / "iclr2027").mkdir()
+        for notes in ([note()], []):
+            original = review_text.store_review_batch(2027, [{"id": "paper-a", "notes": notes}],
+                self.root, retrieved_at="2020-01-01T00:00:00+00:00")[0]
+            with patch.object(review_text, "build_opener", side_effect=AssertionError("Offline read")), \
+                    patch.object(review_text, "retrieve_pages", side_effect=AssertionError("Offline read")):
+                self.assertEqual(review_text.retrieve(2027, "paper-a", self.root), (original, 200))
 
     def test_http_200_verification_html_is_blocked_and_not_cached_as_review_data(self):
         response = io.BytesIO(b'<html><title>Verifying your browser</title><div class="cf-turnstile"></div></html>')

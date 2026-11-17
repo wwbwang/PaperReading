@@ -229,6 +229,19 @@ class ServerTests(unittest.TestCase):
             self.assertEqual(error.exception.code, 503)
             self.assertEqual(json.load(error.exception)["status"], "unavailable")
 
+    def test_broken_review_membership_index_returns_json_without_fetching(self):
+        revision = "c" * 64
+        folder = self.directory / "data/iclr/2027" / revision
+        folder.mkdir()
+        (folder / "_search.sqlite3").write_text("damaged database")
+        params = {"year": 2027, "revision": revision, "paper_id": "2027-a"}
+        with patch.object(module, "retrieve") as fetch:
+            with self.assertRaises(HTTPError) as error:
+                self.client.open(self.base + "/api/reviews?" + urlencode(params))
+            self.assertEqual(error.exception.code, 503)
+            self.assertEqual(json.load(error.exception)["paper_id"], "2027-a")
+            fetch.assert_not_called()
+
     def wordcloud(self, ids, year=2027, revision=None):
         payload = json.dumps({"year": year, "revision": revision or self.revision, "ids": ids}).encode()
         return Request(self.base + "/api/wordcloud", data=payload, headers={"Content-Type": "application/json"})

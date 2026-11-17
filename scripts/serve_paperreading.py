@@ -124,8 +124,13 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         if not database_path.is_file():
             self.send_error(409, "Snapshot unavailable; reload the page")
             return
-        with closing(sqlite3.connect(database_path.as_uri() + "?mode=ro", uri=True)) as database:
-            exists = database.execute("SELECT 1 FROM papers WHERE id = ?", (paper_id,)).fetchone()
+        try:
+            with closing(sqlite3.connect(database_path.as_uri() + "?mode=ro", uri=True)) as database:
+                exists = database.execute("SELECT 1 FROM papers WHERE id = ?", (paper_id,)).fetchone()
+        except sqlite3.Error:
+            self.json_response({"status": "unavailable", "paper_id": paper_id, "reviews": [],
+                                "message": "论文索引暂时不可用，请稍后重试。"}, 503)
+            return
         if not exists:
             self.send_error(404, "Unknown paper in this year")
             return

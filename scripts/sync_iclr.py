@@ -20,6 +20,7 @@ DOCS = "https://docs.openreview.net/how-to-guides/data-retrieval-and-modificatio
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from scripts.paper_keywords import public_author_names
+from scripts.review_text import public_notes, reviewer_alias
 REVIEW_FIELDS = ["rating", "confidence", "soundness", "presentation", "contribution", "informativeness"]
 
 
@@ -111,7 +112,7 @@ def official_records(fetcher, raw, refresh, page_size, year=2027):
             page = json.loads(path.read_text())
         else:
             params = {"invitation": f"{venue}/-/Submission", "details": "directReplies",
-                      "limit": page_size, "offset": offset, "sort": "number:asc"}
+                      "limit": page_size, "offset": offset, "sort": "number:asc", "count": "true"}
             url = "https://api2.openreview.net/notes?" + urlencode(params)
             page = fetcher.json(url)
             page["_retrieved_at"] = now()
@@ -169,10 +170,10 @@ def normalize_mirror(row, provenance):
                        "papercopilot", provenance["retrieved_at"])
     paper["authors"] = public_author_names(row.get("author"))
     fields = ["reviewers", *REVIEW_FIELDS]
-    parts = {k: str(row.get(k) or "").split(";") for k in fields}
+    parts = {k: str(row[k] if row.get(k) is not None else "").split(";") for k in fields}
     count = len(parts["reviewers"]) if row.get("reviewers") else 0
     for field in fields[1:]:
-        if not row.get(field):
+        if row.get(field) in (None, ""):
             parts[field] = [""] * count
     if count and any(len(p) != count for p in parts.values()):
         raise ValueError(f"Reviewer fields are misaligned for {forum}")
@@ -187,21 +188,43 @@ def normalize_mirror(row, provenance):
     return paper, reviews
 
 
+def official_status(content, year):
+    venue = f"ICLR.cc/{year}/Conference"
+    venue_id = value(content, "venueid")
+    label = value(content, "venue")
+    # These are the venue IDs configured by ICLR, not an inference from scores.
+    statuses = {"Submission": "Active", "Withdrawn_Submission": "Withdraw",
+                "Desk_Rejected_Submission": "Desk Reject", "Rejected_Submission": "Reject"}
+    for suffix, status in statuses.items():
+        if venue_id == f"{venue}/{suffix}":
+            return status
+    if not venue_id or venue_id == venue:
+        for status in ("Poster", "Oral", "Spotlight"):
+            if label == f"ICLR {year} {status}":
+                return status
+        if venue_id == venue:
+            return "Accepted"
+    return label or "Unknown"
+
+
 def normalize_official(row, provenance):
     content = row["content"]
+    year = int(provenance.get("conference", "ICLR 2027").rsplit(" ", 1)[-1])
     paper = base_paper(row["id"], value(content, "title"), value(content, "abstract"),
-                       value(content, "venue"), "main", "openreview", provenance["retrieved_at"])
+                       official_status(content, year), "main", "openreview", provenance["retrieved_at"])
+    paper.update(venue_raw=value(content, "venue"), venue_id=value(content, "venueid"))
     author_field = content.get("authors", {})
     public = "everyone" in row.get("readers", ["everyone"]) and (
         not isinstance(author_field, dict) or "everyone" in author_field.get("readers", ["everyone"]))
     paper["authors"] = public_author_names(value(content, "authors")) if public else []
+    keywords = value(content, "keywords", [])
+    keyword_field = content.get("keywords", {})
+    keyword_public = not isinstance(keyword_field, dict) or "everyone" in keyword_field.get("readers", ["everyone"])
+    paper["keywords"] = (";".join(keywords) if isinstance(keywords, list) else keywords or "") if keyword_public else ""
     reviews = []
-    for reply in row.get("details", {}).get("directReplies", []):
-        invitations = reply.get("invitations", [])
-        if not any(i.endswith("/-/Official_Review") for i in invitations):
-            continue
+    for reply in public_notes(row.get("details", {}).get("directReplies", []), year, row["id"]):
         review = {"paper_id": row["id"], "review_index": len(reviews) + 1,
-                  "review_id": reply["id"], "reviewer": ";".join(reply.get("signatures", [])),
+                  "review_id": reply["id"], "reviewer": reviewer_alias(reply.get("signatures", [])),
                   "review_url": f"https://openreview.net/forum?id={row['id']}&noteId={reply['id']}"}
         for field in REVIEW_FIELDS:
             raw = value(reply["content"], field)
