@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { searchPapers } from "./paper-loader.mjs";
 
-export function usePaperSearch(metadata, query, keywords = "", keywordScope = "both", authors = "") {
-  const key = JSON.stringify([metadata.year, metadata.revision, query.trim(), keywords.trim(), keywordScope, authors.trim()]);
-  const active = Boolean(query.trim() || keywords.trim() || authors.trim());
+export function usePaperSearch(metadata, query, keywords = "", keywordScope = "all", authors = "", topics = []) {
+  const key = JSON.stringify([metadata.year, metadata.revision, query.trim(), keywords.trim(), keywordScope, authors.trim(), topics]);
+  const active = Boolean(query.trim() || keywords.trim() || authors.trim() || topics.length);
   const [result, setResult] = useState({ key: "", ids: null, error: null });
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
@@ -12,14 +12,14 @@ export function usePaperSearch(metadata, query, keywords = "", keywordScope = "b
     setResult({ key, ids: null, error: null });
     // Invalidate old results immediately; debounce only the network request.
     const timer = setTimeout(() => {
-      searchPapers(metadata, query, controller.signal, keywords, keywordScope, authors).then(ids => {
+      searchPapers(metadata, query, controller.signal, keywords, keywordScope, authors, topics).then(ids => {
         if (!controller.signal.aborted) setResult({ key, ids, error: null });
       }).catch(error => {
         if (!controller.signal.aborted) setResult({ key, ids: null, error: error.message });
       });
     }, 200);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [metadata, query, keywords, keywordScope, authors, attempt]);
+  }, [metadata, key, active, attempt]);
   return {
     active,
     ids: active && result.key === key ? result.ids : null,

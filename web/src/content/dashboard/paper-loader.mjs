@@ -17,10 +17,11 @@ export function loadPaperDetails(metadata, paper) {
   });
 }
 
-export async function searchPapers(metadata, query, signal, keywords = "", keywordScope = "both", authors = "") {
-  const params = new URLSearchParams({ conference: "iclr", year: metadata.year, revision: metadata.revision, q: query.trim() });
+export async function searchPapers(metadata, query, signal, keywords = "", keywordScope = "all", authors = "", topics = []) {
+  const params = new URLSearchParams({ conference: metadata.venue || "iclr", year: metadata.year, revision: metadata.revision, q: query.trim() });
   if (keywords.trim()) { params.set("keywords", keywords.trim()); params.set("keyword_scope", keywordScope); }
   if (authors.trim()) params.set("authors", authors.trim());
+  if (topics.length) params.set("topics", JSON.stringify(topics));
   const response = await fetch(`/api/search?${params}`, { signal });
   if (!response.ok) throw new Error(response.status === 409 ? "数据已更新，请刷新页面后搜索。" : response.status === 422 ? "当前年份的快照未提供作者信息，暂不可按作者搜索。" : "搜索暂不可用，请重试。");
   const result = await response.json();
@@ -29,9 +30,27 @@ export async function searchPapers(metadata, query, signal, keywords = "", keywo
   return new Set(result.ids);
 }
 
+export async function loadWordCloud(metadata, ids, signal) {
+  const response = await fetch("/api/wordcloud", { method: "POST", signal,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ year: metadata.year, revision: metadata.revision, ids, ...(metadata.venue && metadata.venue !== "iclr" ? { conference: metadata.venue } : {}) }) });
+  if (!response.ok) throw new Error(response.status === 409 ? "数据已更新，请刷新页面。" : "主题词云暂不可用，请重试。");
+  const result = await response.json();
+  if (result.revision !== metadata.revision || result.paper_count !== ids.length || !Array.isArray(result.words)
+    || result.words.some(word => typeof word.key !== "string" || !word.key || typeof word.label !== "string"
+      || !Number.isInteger(word.count) || word.count < 1 || word.count > result.paper_count
+      || !Number.isFinite(word.percentage) || word.percentage < 0 || word.percentage > 100)
+    || !Number.isInteger(result.keyword_papers) || result.keyword_papers < 0 || result.keyword_papers > result.paper_count
+    || result.missing_keywords !== result.paper_count - result.keyword_papers
+    || !Number.isInteger(result.topic_count) || result.topic_count < result.words.length)
+    throw new Error("词云与当前筛选结果不一致，请重试。");
+  return result;
+}
+
 export async function loadKeywords(metadata, ids, signal) {
   if (!ids.length) return {};
   const params = new URLSearchParams({ year: metadata.year, revision: metadata.revision, ids: ids.join(",") });
+  if (metadata.venue && metadata.venue !== "iclr") params.set("conference", metadata.venue);
   const response = await fetch(`/api/keywords?${params}`, { signal });
   if (!response.ok) throw new Error("关键词暂不可用，请重试。");
   const result = await response.json();
@@ -43,6 +62,7 @@ export async function loadKeywords(metadata, ids, signal) {
 const reviewRequests = new Map();
 export function loadReviewText(metadata, paperId) {
   const params = new URLSearchParams({ year: metadata.year, revision: metadata.revision, paper_id: paperId });
+  if (metadata.venue && metadata.venue !== "iclr") params.set("conference", metadata.venue);
   const key = params.toString();
   if (!reviewRequests.has(key)) {
     reviewRequests.set(key, fetch(`/api/reviews?${params}`).then(async response => {

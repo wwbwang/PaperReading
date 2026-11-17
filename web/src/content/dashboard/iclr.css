@@ -37,6 +37,7 @@
 .iclr-table-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
 .iclr-table-toolbar p { font-size: 13px; margin: 0; }
 .iclr-paper-scroll, .iclr-review-scroll { overflow-x: auto; }
+.iclr-paper-scroll { container-type: inline-size; }
 .iclr-paper-table { border-collapse: collapse; width: 100%; table-layout: fixed; min-width: 740px; text-align: left; font-size: 13px; }
 .iclr-paper-table th { font-size: 11px; font-weight: 500; color: var(--secondary); padding: 0 12px 12px; border-bottom: 1px solid var(--border); }
 .iclr-paper-table th:first-child { width: 54%; padding-left: 0; }
@@ -63,7 +64,13 @@
 .iclr-detail-links { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; font-size: 12px; }
 .iclr-detail-links a { color: var(--chart-1); text-decoration: none; }
 .iclr-detail-links a:hover { text-decoration: underline; }
-.iclr-abstract { font-size: 13px; line-height: 1.9; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.iclr-abstract { max-width: calc(100cqw - 48px); font-size: 13px; line-height: 1.9; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.iclr-rich-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.iclr-rich-text .katex { font-size: 1.08em; white-space: normal; overflow-wrap: normal; }
+.iclr-rich-text .iclr-math-inline { display: inline-block; max-width: 100%; overflow-x: auto; vertical-align: middle; }
+.iclr-rich-text .iclr-math-block { display: block; max-width: 100%; overflow-x: auto; }
+.iclr-rich-text .katex-display { margin: .8em 0; }
+.iclr-review-rich-text { max-width: calc(100cqw - 88px); }
 .iclr-review-table { width: 100%; min-width: 570px; border-collapse: collapse; font-size: 12px; }
 .iclr-paper-table .iclr-review-table th, .iclr-paper-table .iclr-review-table td { width: auto; padding: 9px 12px; text-align: right; }
 .iclr-paper-table .iclr-review-table th:first-child { text-align: left; }
@@ -79,6 +86,7 @@
   .iclr-metrics { grid-template-columns: 1fr; }
   .iclr-chart-caption { min-height: 52px; }
   .iclr-details { padding: 16px; }
+  .iclr-abstract { max-width: calc(100cqw - 32px); }
 }
 @media (prefers-reduced-motion: reduce) { .iclr-bin-bar { transition: none; } }
 
@@ -111,6 +119,7 @@
 .iclr-author-filter { flex: .7; min-width: 200px; }
 .iclr-author-filter input:disabled { opacity: .65; cursor: not-allowed; }
 .iclr-author-note { font-size: 12px; margin: -12px 0 24px; line-height: 1.6; }
+.iclr-author-note a { color: var(--chart-1); }
 .iclr-keywords { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
 .iclr-keyword { font: inherit; font-size: 10px; line-height: 1.5; border: 1px solid var(--border); background: color-mix(in srgb, var(--chart-1) 5%, var(--surface)); color: var(--secondary); border-radius: 10px; padding: 3px 7px; cursor: pointer; max-width: 100%; overflow-wrap: anywhere; text-align: left; }
 .iclr-keyword:hover { color: var(--chart-1); border-color: var(--chart-1); }
@@ -120,3 +129,16 @@
 .iclr-list-search { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px 12px; margin-bottom: 18px; }
 .iclr-list-search label { display: grid; gap: 8px; flex: 1; min-width: 220px; font-size: 12px; font-weight: 500; }
 .iclr-list-search p { width: 100%; margin: 0; font-size: 12px; line-height: 1.7; }
+
+.iclr-topic-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 22px; font-size: 12px; }
+.iclr-topic-pill { display: inline-flex; gap: 9px; align-items: center; border: 1px solid var(--chart-1); color: var(--text); background: color-mix(in srgb, var(--chart-1) 9%, var(--surface)); padding: 6px 10px; border-radius: 18px; font: inherit; cursor: pointer; max-width: 100%; overflow-wrap: anywhere; text-align: left; }
+.iclr-topic-pill span { color: var(--secondary); }
+.iclr-topic-summary { margin: 0 0 6px; font-size: 13px; }
+.iclr-wordcloud-plot { width: 100%; min-height: 360px; }
+.iclr-wordcloud-plot svg { display: block; font-family: system-ui, sans-serif; }
+.iclr-wordcloud-plot g { cursor: pointer; outline: none; }
+.iclr-wordcloud-plot g[aria-disabled="true"] { cursor: default; }
+.iclr-wordcloud-plot rect { fill: transparent; stroke: transparent; }
+.iclr-wordcloud-plot g:hover rect, .iclr-wordcloud-plot g:focus-visible rect, .iclr-wordcloud-plot g[aria-pressed="true"] rect { fill: color-mix(in srgb, var(--chart-1) 7%, transparent); stroke: var(--border-strong); }
+.iclr-wordcloud-plot g:focus-visible rect { stroke: var(--chart-1); stroke-width: 2; }
+.iclr-wordcloud-plot text { font-weight: 600; user-select: none; }
