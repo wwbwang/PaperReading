@@ -1,0 +1,61 @@
+{
+  "retrieved_at": "2026-11-18T02:38:40.319148+00:00",
+  "sources": [
+    {
+      "url": "https://vision.insait.ai/publications/",
+      "retrieved_at": "2026-11-18T02:34:48.553430+00:00",
+      "sha256": "8fb2e9e5af803a7fe72555237bdb53885846ed43ce739c2260a4a755fbdcee1a",
+      "bytes": 203118
+    },
+    {
+      "url": "https://zhiyuanyou.github.io/",
+      "retrieved_at": "2026-11-18T02:34:04.687589+00:00",
+      "sha256": "1b629b9e497425a062e77a3b471d576312ef8aafd4d86a59b877d29cadd8d3a2",
+      "bytes": 45671
+    },
+    {
+      "url": "https://www.jasongt.com/publications",
+      "retrieved_at": "2026-11-18T02:34:05.144526+00:00",
+      "sha256": "b39609b17608550cd80f44563780f750c6b5a9bd567a9f47d5c067d36d2a8e32",
+      "bytes": 77839
+    },
+    {
+      "url": "https://xpixel.group/publication.html",
+      "retrieved_at": "2026-11-18T02:34:07.308454+00:00",
+      "sha256": "b44657d6042d75387bddc86cfe4e75ea1611c16a026d1b53e6d105ba47d08904",
+      "bytes": 331853
+    }
+  ],
+  "publications": [
+    {
+      "title": "Enhanced Latent-Space Adversarial Training for Super-Resolution",
+      "venue": "2026 · ICML",
+      "url": "https://vision.insait.ai/publications/enhanced-latent-space-adversarial-training-for-super-resolution/"
+    },
+    {
+      "title": "Harnessing Diffusion-Yielded Score Priors for Image Restoration",
+      "venue": "2025 · SIGGRAPH Asia",
+      "url": "https://vision.insait.ai/publications/harnessing-diffusion-yielded-score-priors-for-image-restoration/"
+    },
+    {
+      "title": "Harnessing Image Diffusion Prior for Photo-Realistic Video Restoration",
+      "venue": "Neural Information Processing Systems (NeurIPS), 2026",
+      "url": "https://zhiyuanyou.github.io/"
+    },
+    {
+      "title": "Evaluation of Visual Processing Should Be Human-Centered, Not Metric-Centered",
+      "venue": "Neural Information Processing Systems (NeurIPS), 2026, Position Paper Track",
+      "url": "https://zhiyuanyou.github.io/"
+    },
+    {
+      "title": "Position: Evaluation of Visual Processing Should Be Human-Centered, Not Metric-Centered",
+      "venue": "Neural Information Processing Systems (NeurIPS), 2026, Position Paper Track",
+      "url": "https://www.jasongt.com/publications"
+    },
+    {
+      "title": "Diffbir: Toward blind image restoration with generative diffusion prior",
+      "venue": "European Conference on Computer Vision (ECCV), 2024",
+      "url": "https://xpixel.group/2024/09/02/Diffbir-ECCV.html?src=lab"
+    }
+  ]
+}

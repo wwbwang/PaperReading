@@ -1,0 +1,100 @@
+{
+  "retrieved_at": "2026-11-18T03:04:25.114291+00:00",
+  "sources": [
+    {
+      "url": "https://vision.insait.ai/publications/",
+      "retrieved_at": "2026-11-18T02:34:48.553430+00:00",
+      "sha256": "8fb2e9e5af803a7fe72555237bdb53885846ed43ce739c2260a4a755fbdcee1a",
+      "bytes": 203118
+    },
+    {
+      "url": "https://xpixel.group/publication.html",
+      "retrieved_at": "2026-11-18T02:34:07.308454+00:00",
+      "sha256": "b44657d6042d75387bddc86cfe4e75ea1611c16a026d1b53e6d105ba47d08904",
+      "bytes": 331853
+    },
+    {
+      "url": "https://liangbinxie.github.io/",
+      "retrieved_at": "2026-11-18T03:03:14.579361+00:00",
+      "sha256": "b4f92fcff5bced0619382b789919efc9c09d7246099ad36e5ae25616850f5efd",
+      "bytes": 21378
+    }
+  ],
+  "publications": [
+    {
+      "title": "Enhanced Latent-Space Adversarial Training for Super-Resolution",
+      "venue": "2026 · ICML",
+      "url": "https://vision.insait.ai/publications/enhanced-latent-space-adversarial-training-for-super-resolution/"
+    },
+    {
+      "title": "TurboFill: Adapting Few-step Text-to-image Model for Fast Image Inpainting",
+      "venue": "IEEE Computer Vision and Pattern Recognition Conference (CVPR), 2025",
+      "url": "https://xpixel.group/2025/06/02/TurboFill.html?src=lab"
+    },
+    {
+      "title": "SmartEdit: Exploring Complex Instruction-based Image Editing with Multimodal Large Language Models",
+      "venue": "Computer Vision and Pattern Recognition(CVPR), 2024",
+      "url": "https://xpixel.group/2023/02/12/SmartEdit.html?src=lab"
+    },
+    {
+      "title": "DeSRA: Detect and Delete the Artifacts of GAN-based Real-World Super-Resolution Models",
+      "venue": "International Conference on Machine Learning (ICML), 2023",
+      "url": "https://xpixel.group/2022/10/21/DeSRA.html?src=lab"
+    },
+    {
+      "title": "Mitigating Artifacts in Real-World Video Super-Resolution Models",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI), 2022",
+      "url": "https://xpixel.group/2022/09/24/Mitigating-Artifacts-in-Real-World-Video-Super-Resolution-Models.html?src=lab"
+    },
+    {
+      "title": "Rethinking Alignment in Video Super-Resolution Transformers",
+      "venue": "Conference and Workshop on Neural Information Processing Systems(NeurIPS), 2022",
+      "url": "https://xpixel.group/2022/09/19/Rethinking-Alignment-in-Video-Super-Resolution-Transformers.html?src=lab"
+    },
+    {
+      "title": "VQFR: Blind Face Restoration with Vector-Quantized Dictionary and Parallel Decoder",
+      "venue": "The European Conference on Computer Vision (ECCV), 2022",
+      "url": "https://xpixel.group/2022/06/06/VQFR.html?src=lab"
+    },
+    {
+      "title": "Finding Discriminative Filters for Specific Degradations in Blind Super-Resolution",
+      "venue": "Conference and Workshop on Neural Information Processing Systems (NeurIPS Spotlight), 2021",
+      "url": "https://xpixel.group/2021/08/03/Finding-Discriminative-Filters-for-Specific-Degradations-in-Blind-Super-Resolution.html?src=lab"
+    },
+    {
+      "title": "Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data",
+      "venue": "International Conference on Computer Vision Workshop (ICCVW), 2021",
+      "url": "https://xpixel.group/2021/07/21/Real-ESRGAN-Training-Real-World-Blind-Super-Resolution-with-Pure-Synthetic-Data.html?src=lab"
+    },
+    {
+      "title": "Enhanced Quadratic Video Interpolation",
+      "venue": "The European Conference on Computer Vision, AIM Workshop (ECCVW), 2020",
+      "url": "https://xpixel.group/2020/07/25/Enhanced-Quadratic-Video-Interpolation.html?src=lab"
+    },
+    {
+      "title": "A Simple Baseline for Latent-Cascaded Video Super-Resolution",
+      "venue": "The Fourteenth International Conference on Learning Representations (ICLR), 2026",
+      "url": "https://liangbinxie.github.io/"
+    },
+    {
+      "title": "Anti-Diffusion: Preventing Abuse of Modifications of Diffusion-Based Models",
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence (AAAI), 2025",
+      "url": "https://liangbinxie.github.io/"
+    },
+    {
+      "title": "Image Conductor: Precision Control for Interactive Video Synthesis",
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence (AAAI), 2025",
+      "url": "https://liangbinxie.github.io/"
+    },
+    {
+      "title": "StyleAdapter: A Single-Pass LoRA-Free Model for Stylized Image Generation",
+      "venue": "International Journal of Computer Vision (IJCV), 2024",
+      "url": "https://liangbinxie.github.io/"
+    },
+    {
+      "title": "T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models",
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence (AAAI), 2024",
+      "url": "https://liangbinxie.github.io/"
+    }
+  ]
+}

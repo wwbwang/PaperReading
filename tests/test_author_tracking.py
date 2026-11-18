@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.author_tracking import build_tracking, classify, parse_publications, title_key
+from scripts.author_tracking import build_tracking, classify, parse_profile_publications, parse_publications, title_key
 
 
 class AuthorTrackingTests(unittest.TestCase):
@@ -30,6 +30,13 @@ class AuthorTrackingTests(unittest.TestCase):
         self.assertEqual(title_key("HAT: Hybrid Attention Transformer"), title_key("HAT — Hybrid attention transformer."))
         self.assertNotEqual(title_key("A Paper"), title_key("A Paper With More Words"))
         self.assertEqual(title_key(r"Attention with $\mathcal{O}(T)$ Complexity"), title_key("Attention with O(T) Complexity"))
+
+    def test_insait_catalog_requires_a_named_author_and_published_venue(self):
+        def row(venue, authors):
+            return f'<div><span class="pub-row-compact__meta">{venue}</span></div><h3>\n  <a href="/publications/p/">A Verified Paper</a>\n</h3><p>{authors}</p>'
+        page = row("2026 · ICML", "Alice Li, Chao Dong") + row("2026 · arXiv", "Chao Dong") + row("2026 · CVPR", "Chaochao Dong")
+        papers = parse_profile_publications(page, "https://vision.insait.ai/publications/", self.profile["aliases"], "insait")
+        self.assertEqual(papers, [{"title": "A Verified Paper", "venue": "2026 · ICML", "url": "https://vision.insait.ai/publications/p/"}])
 
     def test_local_index_preserves_first_seen_and_never_backfills_anonymous_authors(self):
         with tempfile.TemporaryDirectory() as root:

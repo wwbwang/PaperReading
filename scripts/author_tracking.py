@@ -44,18 +44,59 @@ def parse_publications(content, url, aliases):
     return publications
 
 
-def refresh_profiles(directory):
-    path = directory / "watchlist.json"
-    registry = json.loads(path.read_text())
+def parse_profile_publications(content, url, aliases, page_format):
+    """Read titles, author lists and venue labels from the configured public page."""
+    patterns = {
+        "lvmin": r'<div class="right-text">\s*<strong>(?P<title>.*?)</strong>\s*</br>(?P<venue>.*?)</br>(?P<authors>.*?)</br>',
+        "jinjin": r'<pubtit>(?P<title>.*?)</pubtit>\s*<p>\s*<em>(?P<authors>.*?)</em>\s*<br\s*/?>\s*<strong>(?P<venue>.*?)</strong>',
+        "zhiyuan": r'<div class="ptitle">(?P<title>.*?)</div>\s*<div class="pauthors">(?P<authors>.*?)</div>\s*<div class="pvenue">(?P<venue>.*?)(?:<p>|</div>)',
+        "insait": r'pub-row-compact__meta">(?P<venue>.*?)</span>\s*</div>\s*<h3[^>]*>\s*<a\s+href="(?P<link>[^"]+)"[^>]*>(?P<title>.*?)</a>\s*</h3>\s*<p[^>]*>(?P<authors>.*?)</p>',
+        "liangbin": (
+            r'<td>\s*<a(?:\s[^>]*)?><b>(?P<title>[^<]+)</b></a>\s*<br>'
+            r'(?P<authors>(?:(?!</td>).)*?)<br>\s*<p[^>]*>\s*'
+            r'(?P<venue><em>(?:(?!</em>).)*?</em>\s*20\d{2})\.'
+        ),
+    }
+    content = re.sub(r"<!--.*?-->", "", content, flags=re.S)
+    names = {author_key(name) for name in aliases}
+    publications = []
+    for match in re.finditer(patterns[page_format], content, re.S):
+        venue = " ".join(clean(match["venue"]).split())
+        if not re.search(r"\b20\d{2}\b", venue) or re.search(r"arxiv|preprint|submitted|under review|tech(?:nical)? report", venue, re.I):
+            continue
+        listed_names = re.split(r",|\s+and\s+", clean(match["authors"]))
+        if names.intersection(author_key(name.strip(" *†✉\n")) for name in listed_names):
+            link = match.groupdict().get("link")
+            publications.append({"title": " ".join(clean(match["title"]).split()), "venue": venue,
+                                 "url": urljoin(url, link) if link else url})
+    return publications
+
+
+def refresh_profiles(directory, *, author_ids=None, refresh=True):
+    registry = json.loads((directory / "watchlist.json").read_text())
+    responses = {}
     for profile in registry["authors"]:
-        cache = Cache(directory / "raw" / profile["id"], refresh=True)
-        content = cache.get(profile["publications_url"])
-        publications = parse_publications(content.decode(), profile["publications_url"], profile["aliases"])
+        if author_ids is not None and profile["id"] not in author_ids:
+            continue
+        formats = profile.get("publication_sources") or {profile["publications_url"]: "xpixel"}
+        sources, publications = [], {}
+        for url, page_format in formats.items():
+            if url not in responses:
+                cache = Cache(directory / "raw" / "bibliographies", refresh=refresh)
+                responses[url] = cache.get(url).decode(), cache.sources[-1]
+            content, record = responses[url]
+            if page_format == "xpixel":
+                entries = parse_publications(content, url, profile["aliases"])
+            else:
+                entries = parse_profile_publications(content, url, profile["aliases"], page_format)
+            sources.append(record)
+            for entry in entries:
+                publications.setdefault(title_key(entry["title"]), entry)
         if not publications:
-            raise ValueError("Publications parser found no evidence; keeping the previous snapshot")
+            raise ValueError(f'No publication evidence for {profile["id"]}; retaining the previous snapshot')
         write_json(directory / f'{profile["id"]}.json', {
             "retrieved_at": datetime.now(timezone.utc).isoformat(),
-            "source": cache.sources[-1], "publications": publications})
+            "sources": sources, "publications": list(publications.values())})
 
 
 def classify(paper, profile, evidence):

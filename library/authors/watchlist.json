@@ -7,13 +7,225 @@
       "initials": "董",
       "affiliation": "中国科学院深圳先进技术研究院",
       "department": "多媒体集成技术研究中心 · XPixel",
-      "topics": ["图像与视频超分辨率", "图像复原", "画质增强"],
-      "aliases": ["Chao Dong", "董超"],
+      "topics": [
+        "图像与视频超分辨率",
+        "图像复原",
+        "画质增强"
+      ],
+      "aliases": [
+        "Chao Dong",
+        "董超"
+      ],
       "profile_url": "https://people.ucas.ac.cn/~chaodong",
       "team_url": "https://xpixel.group/",
       "publications_url": "https://xpixel.group/publication.html",
       "identity_verified_at": "2026-11-17",
       "identity_note": "国科大导师主页确认董超的先进院身份；正式公开作者名单中的姓名须与团队已发表论文标题精确关联后，才计为已核实。"
+    },
+    {
+      "id": "lvmin-zhang",
+      "name": "Lvmin Zhang",
+      "name_en": "",
+      "initials": "LZ",
+      "affiliation": "斯坦福大学",
+      "department": "计算机科学",
+      "topics": [
+        "可控生成",
+        "视频生成",
+        "计算机图形学"
+      ],
+      "aliases": [
+        "Lvmin Zhang",
+        "Lyumin Zhang"
+      ],
+      "profile_url": "https://lvminzhang.com/",
+      "team_url": null,
+      "publications_url": "https://lvminzhang.com/",
+      "identity_verified_at": "2026-11-18",
+      "publication_sources": {
+        "https://lvminzhang.com/": "lvmin"
+      }
+    },
+    {
+      "id": "jinjin-gu",
+      "name": "顾津锦",
+      "name_en": "Jinjin Gu",
+      "initials": "顾",
+      "affiliation": "INSAIT",
+      "department": "索菲亚大学",
+      "topics": [
+        "图像与视频复原",
+        "视觉生成",
+        "视觉推理"
+      ],
+      "aliases": [
+        "Jinjin Gu",
+        "顾津锦"
+      ],
+      "profile_url": "https://insait.ai/dr-jinjin-gu/",
+      "team_url": "https://vision.insait.ai/",
+      "publications_url": "https://www.jasongt.com/publications",
+      "identity_verified_at": "2026-11-18",
+      "publication_sources": {
+        "https://vision.insait.ai/publications/": "insait",
+        "https://zhiyuanyou.github.io/": "zhiyuan",
+        "https://www.jasongt.com/publications": "jinjin",
+        "https://xpixel.group/publication.html": "xpixel"
+      }
+    },
+    {
+      "id": "fanghua-yu",
+      "name": "Fanghua Yu",
+      "name_en": "",
+      "initials": "FY",
+      "affiliation": "XPixel（公开档案）",
+      "department": "",
+      "topics": [
+        "图像与视频复原",
+        "扩散模型"
+      ],
+      "aliases": [
+        "Fanghua Yu"
+      ],
+      "profile_url": "https://xpixel.group/2009/03/10/fanghuayu.html",
+      "team_url": "https://xpixel.group/",
+      "publications_url": "https://xpixel.group/publication.html",
+      "identity_verified_at": "2026-11-18",
+      "publication_sources": {
+        "https://vision.insait.ai/publications/": "insait",
+        "https://zhiyuanyou.github.io/": "zhiyuan",
+        "https://www.jasongt.com/publications": "jinjin",
+        "https://xpixel.group/publication.html": "xpixel"
+      }
+    },
+    {
+      "id": "zhiyuan-you",
+      "name": "尤志远",
+      "name_en": "Zhiyuan You",
+      "initials": "尤",
+      "affiliation": "香港中文大学",
+      "department": "MMLab",
+      "topics": [
+        "生成模型",
+        "多模态视觉",
+        "底层视觉"
+      ],
+      "aliases": [
+        "Zhiyuan You",
+        "尤志远"
+      ],
+      "profile_url": "https://zhiyuanyou.github.io/",
+      "team_url": "https://xpixel.group/",
+      "publications_url": "https://zhiyuanyou.github.io/",
+      "identity_verified_at": "2026-11-18",
+      "publication_sources": {
+        "https://vision.insait.ai/publications/": "insait",
+        "https://zhiyuanyou.github.io/": "zhiyuan",
+        "https://www.jasongt.com/publications": "jinjin",
+        "https://xpixel.group/publication.html": "xpixel"
+      }
+    },
+    {
+      "id": "xinqi-lin",
+      "name": "林心淇",
+      "name_en": "Xinqi Lin",
+      "initials": "林",
+      "affiliation": "中国科学院深圳先进技术研究院",
+      "department": "XPixel（公开档案）",
+      "topics": [
+        "图像复原",
+        "超分辨率"
+      ],
+      "aliases": [
+        "Xinqi Lin",
+        "林心淇"
+      ],
+      "profile_url": "https://0x3f3f3f3fun.github.io/",
+      "team_url": "https://xpixel.group/",
+      "publications_url": "https://xpixel.group/publication.html",
+      "identity_verified_at": "2026-11-18",
+      "publication_sources": {
+        "https://vision.insait.ai/publications/": "insait",
+        "https://zhiyuanyou.github.io/": "zhiyuan",
+        "https://www.jasongt.com/publications": "jinjin",
+        "https://xpixel.group/publication.html": "xpixel"
+      }
+    },
+    {
+      "id": "jinfan-hu",
+      "name": "Jinfan Hu",
+      "name_en": "",
+      "initials": "JH",
+      "affiliation": "中国科学院深圳先进技术研究院（博士毕业）",
+      "department": "XPixel",
+      "topics": [
+        "底层视觉",
+        "模型可解释性",
+        "生成模型"
+      ],
+      "aliases": [
+        "Jinfan Hu"
+      ],
+      "profile_url": "https://j-fhu.github.io/",
+      "team_url": "https://xpixel.group/",
+      "publications_url": "https://xpixel.group/publication.html",
+      "identity_verified_at": "2026-11-18",
+      "publication_sources": {
+        "https://vision.insait.ai/publications/": "insait",
+        "https://zhiyuanyou.github.io/": "zhiyuan",
+        "https://www.jasongt.com/publications": "jinjin",
+        "https://xpixel.group/publication.html": "xpixel"
+      }
+    },
+    {
+      "id": "liangbin-xie",
+      "name": "Liangbin Xie",
+      "name_en": "",
+      "initials": "LX",
+      "affiliation": "澳门大学 · 中国科学院深圳先进技术研究院",
+      "department": "XPixel",
+      "topics": [
+        "图像与视频生成",
+        "视频编辑",
+        "超分辨率"
+      ],
+      "aliases": [
+        "Liangbin Xie"
+      ],
+      "profile_url": "https://liangbinxie.github.io/",
+      "team_url": "https://xpixel.group/",
+      "publications_url": "https://xpixel.group/publication.html",
+      "identity_verified_at": "2026-11-18",
+      "publication_sources": {
+        "https://vision.insait.ai/publications/": "insait",
+        "https://xpixel.group/publication.html": "xpixel",
+        "https://liangbinxie.github.io/": "liangbin"
+      }
+    },
+    {
+      "id": "xintao-wang",
+      "name": "王鑫涛",
+      "name_en": "Xintao Wang",
+      "initials": "王",
+      "affiliation": "快手可灵（Kling）",
+      "department": "",
+      "topics": [
+        "多模态生成",
+        "视频生成",
+        "图像与视频复原"
+      ],
+      "aliases": [
+        "Xintao Wang",
+        "王鑫涛"
+      ],
+      "profile_url": "https://xinntao.github.io/",
+      "team_url": "https://kling.ai/",
+      "publications_url": "https://xpixel.group/publication.html",
+      "identity_verified_at": "2026-11-18",
+      "publication_sources": {
+        "https://xpixel.group/publication.html": "xpixel",
+        "https://liangbinxie.github.io/": "liangbin"
+      }
     }
   ]
 }

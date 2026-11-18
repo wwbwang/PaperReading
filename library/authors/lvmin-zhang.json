@@ -1,0 +1,158 @@
+{
+  "retrieved_at": "2026-11-18T02:38:39.034465+00:00",
+  "sources": [
+    {
+      "url": "https://lvminzhang.com/",
+      "retrieved_at": "2026-11-18T02:34:04.522268+00:00",
+      "sha256": "e42642dc28b5b61b787d4b0d5d17be5d9bf0a1dd1fd9902e3cf532cca9c0eb5a",
+      "bytes": 59008
+    }
+  ],
+  "publications": [
+    {
+      "title": "Masked Visual Actions for Unified World Modeling",
+      "venue": "Neural Information Processing Systems (Neurips) 2026",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Collascope: Supporting Serendipitous Asset Exploration for Collage-Based Storytelling",
+      "venue": "User Interface Software and Technology (UIST) 2026 Honorable Mention Award",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "RenderFormer-V2: Neural Rendering with Heterogeneous Scene Primitives",
+      "venue": "European Conference on Computer Vision (ECCV) 2026",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Ring Forcing: Towards Precise Long-Term Memory for Autoregressive Video Diffusion",
+      "venue": "European Conference on Computer Vision (ECCV) 2026",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "FlexComposer: Unified Video Compositing from Images to Dynamic Footage with Flexible Trajectory Control",
+      "venue": "European Conference on Computer Vision (ECCV) 2026",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Mode Seeking meets Mean Seeking for Fast Long Video Generation",
+      "venue": "International Conference on Machine Learning (ICML) 2026",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "FourTune: Towards Fully 4-Bit Efficient Post-Training for Diffusion Models",
+      "venue": "International Conference on Machine Learning (ICML) 2026",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "UniVidX: A Unified Multimodal Framework for Versatile Video Generation via Diffusion Priors",
+      "venue": "ACM Transactions on Graphics (SIGGRAPH 2026)",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "DeltaQuant: 4-bit Video Diffusion Models with Spatiotemporal Delta Smoothing",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) 2026",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Mixture of Contexts for Long Video Generation",
+      "venue": "International Conference on Learning Representations (ICLR) 2026",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Captain Cinema: Towards Short Movie Generation",
+      "venue": "International Conference on Learning Representations (ICLR) 2026",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "StreamDiffusionV2: A Streaming System for Dynamic and Interactive Video Generation",
+      "venue": "Machine Learning and Systems (MLSys) 2026 Best Research Paper Award",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "CineVision: An Interactive Pre-visualization Storyboard System for Director–Cinematographer Collaboration",
+      "venue": "User Interface Software and Technology (UIST) 2025",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Instance Segmentation of Scene Sketches Using Natural Image Priors",
+      "venue": "ACM SIGGRAPH 2025 Conference",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Radial Attention: O(n\\log n) Sparse Attention with Energy Decay for Long Video Generation",
+      "venue": "Neural Information Processing Systems (Neurips) 2025",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "TinyHistory: Lightweight Video History Embeddings via Two-Stage Context Learning",
+      "venue": "European Conference on Computer Vision (ECCV) 2026",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "FramePack: Frame Context Packing and Drift Prevention in Next-Frame-Prediction Video Diffusion Models",
+      "venue": "Neural Information Processing Systems (Neurips) 2025 Spotlight (3%)",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "PaintsAlter: Generating Past and Future in Digital Painting Processes",
+      "venue": "ACM Transactions on Graphics (SIGGRAPH 2025)",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "IC-Light: Scaling In-the-Wild Training for Diffusion-based Illumination Harmonization and Editing by Imposing Consistent Light Transport",
+      "venue": "International Conference on Learning Representations (ICLR) 2025 Oral (1%)",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Sprite-from-Sprite: Cartoon Animation Decomposition with Self-supervised Sprite Estimation",
+      "venue": "ACM Transactions on Graphics (SIGGRAPH ASIA 2022, Journal Track)",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "SmartShadow: Artistic Shadow Drawing Tool for Line Drawings",
+      "venue": "IEEE International Conference on Computer Vision (ICCV) 2021 Oral (3%)",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Screenshots from Screen Photography",
+      "venue": "SIGGRAPH '21: ACM SIGGRAPH 2021 Posters",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Generating Digital Painting Lighting Effects via RGB-space Geometry",
+      "venue": "ACM Transactions on Graphics (Presented in SIGGRAPH 2020)",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Generating Manga from Illustrations via Mimicking Manga Workflow",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) 2021",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "User-Guided Line Art Flat Filling with Split Filling Mechanism",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) 2021",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "DanbooRegion: An Illustration Region Dataset",
+      "venue": "European Conference on Computer Vision (ECCV) 2020",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Erasing Appearance Preservation in Optimization-based Smoothing",
+      "venue": "European Conference on Computer Vision (ECCV) 2020 Spotlight (5%)",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Two-stage Sketch Colorization",
+      "venue": "ACM Transactions on Graphics (SIGGRAPH Asia 2018)",
+      "url": "https://lvminzhang.com/"
+    },
+    {
+      "title": "Style Transfer for Anime Sketches with Enhanced Residual U-net and Auxiliary Classifier GAN",
+      "venue": "Asian Conference on Pattern Recognition (ACPR) 2017 Spotlight (5%)",
+      "url": "https://lvminzhang.com/"
+    }
+  ]
+}
