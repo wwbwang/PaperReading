@@ -186,7 +186,9 @@ node --test tests/iclr_web.test.mjs tests/paper-loader.test.mjs
 
 ## 多会议、期刊与 Workshop（2025–2027）
 
-`scripts/paper_venues.py` 维护 23 个来源：ICLR、CVPR、ICCV、ECCV、NeurIPS、ICML、AAAI、IJCAI、WACV、BMVC、ACCV、ACM MM、ICIP、ICASSP；TPAMI、IJCV、TIP、TCSVT、TMM、TCI、Pattern Recognition；NTIRE、AIM。首页提供每个来源的三个年份入口，区分已采集记录、单双年不举办和公开数据暂未取得。
+`scripts/paper_venues.py` 维护 24 个来源：ICLR、CVPR、ICCV、ECCV、NeurIPS、ICML、AAAI、IJCAI、WACV、BMVC、ACCV、ACM MM、ICIP、ICASSP、SIGGRAPH；TPAMI、IJCV、TIP、TCSVT、TMM、TCI、Pattern Recognition；NTIRE、AIM。首页提供每个来源的三个年份入口，区分已采集记录、单双年不举办和公开数据暂未取得。
+
+SIGGRAPH 位于 TPAMI 后、ICCV 前，提供 2025–2027 年入口。仅收录 Technical Papers，排除独立 Posters、受邀 TOG 论文展示及 SIGGRAPH Asia。优先使用标注来源的公开镜像，缺失年份读取官方每日节目表及论文展示页；官方日程 Description 可能是短简介，不等同于出版全文摘要。未核实 Journal / Conference 两轨全量覆盖，未取得的审稿评分保持缺失。下载记录及原始响应保存在本地 `library/siggraph/<year>/`，可用 `python scripts/sync_library.py --venues siggraph` 更新，再运行 `python scripts/build_library.py --venues siggraph` 构建并更新首页。
 
 ```bash
 # 首次采集或继续未完成的来源；已有原始响应会经校验后复用。
@@ -229,6 +231,6 @@ python scripts/author_tracking.py --refresh-profiles
 
 ### 首页录取与投稿统计口径
 
-`library/conference-statistics.json` 维护已人工核实、附来源与核实日期的会议主会汇总。首页标注“核实”时，录取数与总投稿数都取自同一届主会统计，不与本地论文列表计数混用；标注“本地”时，仅显示本地录取记录数，总投稿数保持未知。列表里有少量公开拒稿不构成全量覆盖证据。
+`library/conference-statistics.json` 保存每届会议的核实数字、统计口径、来源和核实日期。首页标注“核实”时，未公开或无法核对的项用“—”表示，只有同口径的录取和投稿数都已核实时才计算录取率。标注“本地”时，录取数来自本地论文记录，总投稿数保持未知。
 
 ICML 2025 的官方 Fact Sheet 公布主会录取 3,260 篇、录取率约 27%；RIKEN AIP 公告明确分母为 12,107 篇，计算为 26.93%。本地镜像仅 3,431 条，其中录取状态 3,269 条、拒稿 162 条，因此原先 `3,269 / 3,431` 的展示不能解释为会议录取率。来源链接及范围均保存在该统计文件和首页的数据说明中。论文页继续显示本地实际收录数量，不补造缺失的拒稿记录。

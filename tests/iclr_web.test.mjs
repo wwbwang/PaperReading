@@ -130,17 +130,18 @@ for (const year of [2026, 2027]) test(`ICLR ${year}: lean bootstrap and lazy det
   assert.ok(readFileSync(new URL(build.snapshot.path + ".gz", root)).length < 3_000_000, "initial data stays below 3 MB compressed");
 });
 
-test("the entry page links all 23 venues and three years without embedding the paper corpus", () => {
+test("the entry page links all 24 venues and three years without embedding the paper corpus", () => {
   const page = readFileSync(new URL("../web/dist/index.html", import.meta.url), "utf8");
   assert.ok(page.includes('href="/iclr/2026/"'));
   assert.ok(page.includes('href="/iclr/2027/"'));
-  assert.ok(Buffer.byteLength(page) < 75_000, "69 year cards stay below 75 KB uncompressed");
+  assert.ok(Buffer.byteLength(page) < 75_000, "72 year cards stay below 75 KB uncompressed");
   assert.ok(readFileSync(new URL("../web/dist/index.html.gz", import.meta.url)).length < 12_000, "entry transfer stays below 12 KB compressed");
   assert.ok(!page.includes("ratings_json"), "paper rows remain in lazy-loaded datasets");
   const catalog = JSON.parse(readFileSync(new URL("../web/dist/catalog.json", import.meta.url)));
-  assert.equal(catalog.datasets.length, 69);
+  assert.equal(catalog.datasets.length, 72);
   const venues = [...new Set(catalog.datasets.map(row => row.venue))];
-  assert.equal(venues.length, 23);
+  assert.equal(venues.length, 24);
+  assert.deepEqual(venues.slice(0, 7), ["cvpr", "neurips", "icml", "iclr", "tpami", "siggraph", "iccv"]);
   for (const venue of venues) {
     assert.deepEqual(catalog.datasets.filter(row => row.venue === venue).map(row => row.year), [2027, 2026, 2025]);
     for (const year of [2025, 2026, 2027]) assert.ok(page.includes(`href="/${venue}/${year}/"`));

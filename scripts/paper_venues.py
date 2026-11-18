@@ -8,6 +8,7 @@ VENUES = {
     "icml": ("ICML", "conference", "International Conference on Machine Learning", "https://icml.cc/"),
     "iclr": ("ICLR", "conference", "International Conference on Learning Representations", "https://iclr.cc/"),
     "tpami": ("TPAMI", "journal", "IEEE Transactions on Pattern Analysis and Machine Intelligence", "https://www.computer.org/csdl/journal/tp"),
+    "siggraph": ("SIGGRAPH", "conference", "ACM SIGGRAPH Conference on Computer Graphics and Interactive Techniques", "https://www.siggraph.org/"),
     "iccv": ("ICCV", "conference", "IEEE/CVF International Conference on Computer Vision", "https://iccv.thecvf.com/"),
     "eccv": ("ECCV", "conference", "European Conference on Computer Vision", "https://www.ecva.net/papers.php"),
     "aaai": ("AAAI", "conference", "AAAI Conference on Artificial Intelligence", "https://ojs.aaai.org/index.php/AAAI"),

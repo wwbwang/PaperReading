@@ -37,8 +37,11 @@ def decision_counts(rows, statistics=None):
               "totalPaperCount": None}
     if statistics is not None:
         admitted, submitted = statistics["accepted"], statistics["submitted"]
-        if (type(admitted) is not int or type(submitted) is not int
-                or not 0 <= admitted <= submitted or submitted == 0 or not statistics.get("sources")):
+        if ((admitted is None and submitted is None)
+                or (admitted is not None and (type(admitted) is not int or admitted < 0))
+                or (submitted is not None and (type(submitted) is not int or submitted <= 0))
+                or (admitted is not None and submitted is not None and admitted > submitted)
+                or not statistics.get("sources")):
             raise ValueError("Submission statistics require valid counts and sources")
         counts.update(acceptedPaperCount=admitted, totalPaperCount=submitted,
                       localAcceptedPaperCount=accepted, statistics=statistics)
@@ -99,6 +102,8 @@ def snapshot(venue, year, assets):
     coverage = (f"已收录 {len(papers):,} 篇；摘要 {manifest['abstract_count']:,} 篇、公开作者 {manifest['author_count']:,} 篇、Keywords {manifest['keyword_count']:,} 篇。"
                 if papers else manifest["message"])
     coverage += " 审稿评分及正文只在来源提供时展示；不以录用结果推测评分。"
+    if manifest.get("coverage_note"):
+        coverage += " " + manifest["coverage_note"]
     if kind == "journal":
         coverage += " 年份使用 Crossref 的 published/issued 年；Early Access 与卷期年份可能不同。"
     if values:
@@ -205,19 +210,27 @@ def portal():
             entries.append(entry)
             text = f'{len(rows):,}<span> 篇</span>' if rows else {"not_held": "本年不举办", "unavailable": "暂未获取"}.get(status, "暂未获取")
             info = f'{entry["reviewCount"]:,} 条公开评分' if entry["reviewCount"] else "来源未提供公开评分"
-            if rows and kind != "journal":
-                accepted = "待定" if not entry.get("statistics") and not entry["acceptedPaperCount"] and entry["pendingDecisionCount"] else f'{entry["acceptedPaperCount"]:,}'
+            verified = entry.get("statistics")
+            if kind != "journal" and (rows or verified):
+                admitted = entry["acceptedPaperCount"]
+                accepted = f"{admitted:,}" if admitted is not None else "—"
+                if not verified and not admitted and entry["pendingDecisionCount"]:
+                    accepted = "待定"
                 total = f'{entry["totalPaperCount"]:,}' if entry["totalPaperCount"] is not None else "—"
-                verified = entry.get("statistics")
                 text = f'<span>{"核实" if verified else "本地"}</span> {accepted} / {total}'
-                scope = (f'{verified["scope"]}；录取率 {100 * verified["accepted"] / verified["submitted"]:.2f}%'
+                scope = (verified["scope"]
                          if verified else "录取数为本地记录统计；总投稿量尚未核实")
+                if verified and admitted is not None and entry["totalPaperCount"] is not None:
+                    scope += f'；录取率 {100 * admitted / entry["totalPaperCount"]:.2f}%'
                 info = f'录取 {accepted} / 总投稿 {total}；{scope}；{info}'
             cards.append(f'<a class="year-card" data-year="{year}" data-status="{status}" href="/{venue}/{year}/" title="{html.escape(info)}" aria-label="{html.escape(label)} {year}，{len(rows):,} 条已获取记录；{html.escape(info)}"><span class="year-heading">{year}</span><span class="year-count">{text}</span><span class="year-arrow" aria-hidden="true">↗</span></a>')
         type_label = {"conference": "会议", "journal": "期刊", "workshop": "Workshop"}[kind]
         column_label = "收录论文" if kind == "journal" else "录取 / 总投稿"
         sections.append(f'<article class="conference" data-kind="{kind}"><div class="conference-header"><div><span class="conference-tag">{type_label}</span><h3>{html.escape(label)}</h3></div><a class="availability" href="{html.escape(homepage)}" target="_blank" rel="noopener noreferrer" aria-label="{html.escape(label)} 官方网站">官网 ↗</a></div><p class="venue-name">{html.escape(name)}</p><div class="year-columns" aria-hidden="true"><span>年份</span><span>{column_label}</span></div><div class="year-grid">{"".join(cards)}</div></article>')
     template = (WEB / "portal/index.html").read_text()
+    template = template.replace("__VENUE_COUNT__", str(len(VENUES)))
+    for kind in ("conference", "journal", "workshop"):
+        template = template.replace(f"__{kind.upper()}_COUNT__", str(sum(v[1] == kind for v in VENUES.values())))
     source_notes = []
     for statistic in statistics.values():
         links = "；".join(f'<a href="{html.escape(source["url"])}" target="_blank" rel="noopener noreferrer">{html.escape(source["label"])} ↗</a>'

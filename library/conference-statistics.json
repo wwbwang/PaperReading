@@ -1,4 +1,64 @@
 {
+  "cvpr/2025": {
+    "accepted": 2878,
+    "submitted": 13008,
+    "scope": "CVPR 2025 主会有效投稿，按组委会手册的录取决定统计",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "组委会主会手册，第 3 页",
+        "url": "https://media.eventhosts.cc/Conferences/CVPR2025/CVPR_main_conf_2025.pdf#page=3"
+      }
+    ]
+  },
+  "cvpr/2026": {
+    "accepted": 4072,
+    "submitted": 16092,
+    "scope": "CVPR 2026 主会有效投稿，按程序主席手册的录取统计",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "组委会主会手册：4,072 篇录取",
+        "url": "https://media.eventhosts.cc/Conferences/CVPR2026/CVPR_main_conf_2026_15.pdf"
+      },
+      {
+        "label": "闭幕通稿另报 4,089 项获准展示，主页使用主会手册口径",
+        "url": "https://cvpr.thecvf.com/Conferences/2026/News/Closing"
+      }
+    ]
+  },
+  "neurips/2025": {
+    "accepted": 5290,
+    "submitted": 21575,
+    "scope": "NeurIPS 2025 主赛道有效投稿，不含其他赛道",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "程序主席审稿回顾",
+        "url": "https://blog.neurips.cc/2025/09/30/reflections-on-the-2025-review-process-from-the-program-committee-chairs/"
+      },
+      {
+        "label": "官方 Fact Sheet",
+        "url": "https://media.neurips.cc/Conferences/NeurIPS2025/press/NeurIPS2025-Fact_Sheet.pdf"
+      }
+    ]
+  },
+  "neurips/2026": {
+    "accepted": 7900,
+    "submitted": 30709,
+    "scope": "NeurIPS 2026 主赛道提交 PDF 的有效投稿，使用程序委员会通知口径",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "RIKEN AIP 录取公告",
+        "url": "https://aip.riken.jp/news/neurips2026/?lang=en"
+      },
+      {
+        "label": "UNSW 录取公告",
+        "url": "https://www.unsw.edu.au/news/2026/11/cse-researchers-present-46-papers-at-neurips-2026"
+      }
+    ]
+  },
   "icml/2025": {
     "accepted": 3260,
     "submitted": 12107,
@@ -15,5 +75,281 @@
       }
     ],
     "local_snapshot_note": "2026-11-16 镜像共 3,431 条记录，其中 3,269 条为录取状态、162 条为拒稿状态；不是全部投稿，录取状态数量也与会议公布的主会录取数不同。不得以该列表长度计算官方录取率。"
+  },
+  "icml/2026": {
+    "accepted": 6552,
+    "submitted": 24661,
+    "scope": "ICML 2026 主会，采用开幕式公布的投稿及录取数字，含被撤回和桌拒的投稿",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "官方 Fact Sheet",
+        "url": "https://media.icml.cc/Conferences/ICML2026/ICML2026_Fact_Sheet.pdf"
+      },
+      {
+        "label": "ICML 官方发布的程序主席开幕统计",
+        "url": "https://www.linkedin.com/posts/icmlconf_icml2026-icml2026-activity-7480284281848741888-a9np"
+      },
+      {
+        "label": "UCL 公告转述较早的评审阶段数据，口径与开幕统计不同",
+        "url": "https://www.ucl.ac.uk/engineering/news/papers-accepted-icml-2026"
+      }
+    ]
+  },
+  "iclr/2025": {
+    "accepted": 3704,
+    "submitted": 11603,
+    "scope": "ICLR 2025 主会，按官方 Fact Sheet 的程序委员会统计",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "官方 Fact Sheet",
+        "url": "https://media.iclr.cc/Conferences/ICLR2025/ICLR2025_Fact_Sheet.pdf"
+      }
+    ]
+  },
+  "iclr/2026": {
+    "accepted": 5357,
+    "submitted": 19525,
+    "scope": "ICLR 2026 主会有效投稿，采用最终 Fact Sheet 的录取数",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "最终 Fact Sheet：5,357 篇录取",
+        "url": "https://media.iclr.cc/Conferences/ICLR2026/ICLR2026_Fact_Sheet.pdf"
+      },
+      {
+        "label": "程序主席较早的审稿回顾报 5,355 篇",
+        "url": "https://blog.iclr.cc/2026/03/31/a-retrospective-on-the-iclr-2026-review-process/"
+      }
+    ]
+  },
+  "siggraph/2025": {
+    "accepted": 306,
+    "submitted": null,
+    "scope": "SIGGRAPH 2025 Technical Papers 两轨有条件录取，按名单唯一论文编号计数",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "官方有条件录取名单",
+        "url": "https://s2025.siggraph.org/wp-content/uploads/2025/03/SIGGRAPH-2025-TECHNICAL-PAPERS-CONDITIONALLY-ACCEPTED-PAPERS.pdf"
+      },
+      {
+        "label": "ACM SIGGRAPH 公告仅给出超过 970 篇投稿",
+        "url": "https://blog.siggraph.org/2025/06/siggraph-2025-technical-papers-awards-best-papers-honorable-mentions-and-test-of-time.html/"
+      }
+    ]
+  },
+  "siggraph/2026": {
+    "accepted": 327,
+    "submitted": null,
+    "scope": "SIGGRAPH 2026 Technical Papers 两轨有条件录取，按名单唯一论文编号计数",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "官方有条件录取名单",
+        "url": "https://s2026.siggraph.org/wp-content/uploads/2026/03/SIGGRAPH-2026-TECHNICAL-PAPERS-CONDITIONALLY-ACCEPTED-PAPERS.pdf"
+      },
+      {
+        "label": "ACM SIGGRAPH 公告仅给出超过 1,120 篇投稿",
+        "url": "https://blog.siggraph.org/2026/05/siggraph-2026-technical-papers-awards-best-papers-honorable-mentions-and-test-of-time.html/"
+      }
+    ]
+  },
+  "iccv/2025": {
+    "accepted": 2701,
+    "submitted": 11239,
+    "scope": "ICCV 2025 主会有效投稿，按程序主席手册统计",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "组委会主会手册，第 3 页",
+        "url": "https://media.eventhosts.cc/Conferences/ICCV2025/iccv25_main_program.pdf#page=3"
+      }
+    ]
+  },
+  "eccv/2026": {
+    "accepted": 2834,
+    "submitted": 10473,
+    "scope": "ECCV 2026 主会，录取数按官方名单中的唯一论文链接计数",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "ECVA 官方录取名单",
+        "url": "https://eccv.ecva.net/Conferences/2026/AcceptedPapers"
+      },
+      {
+        "label": "参与组织会议的 KTH：10,473 篇投稿",
+        "url": "https://www.kth.se/en/eecs/nyheter/kth-played-a-key-role-in-bringing-eccv-back-to-sweden-after-32-years-1.1496376"
+      }
+    ]
+  },
+  "aaai/2025": {
+    "accepted": 3032,
+    "submitted": 12957,
+    "scope": "AAAI 2025 主技术赛道，按送审的完整论文统计",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "AAAI 官方会议信息图：12,957 篇完整论文送审",
+        "url": "https://aaai.org/wp-content/uploads/2025/06/Sponsorship-Infographic-v2.pdf"
+      },
+      {
+        "label": "RIKEN AIP 录取公告",
+        "url": "https://aip.riken.jp/news/202412_aaai25/"
+      }
+    ]
+  },
+  "aaai/2026": {
+    "accepted": 4167,
+    "submitted": 23680,
+    "scope": "AAAI 2026 主技术赛道有效投稿",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "北京航空航天大学参会实验室公告",
+        "url": "https://irip.buaa.edu.cn/info/1067/1833.htm"
+      },
+      {
+        "label": "DFKI 参会实验室公告",
+        "url": "https://iml.dfki.de/news/two-iml-contributions-to-aaai-2026/"
+      },
+      {
+        "label": "AAAI 审稿进度说明区分初始投稿与合规送审",
+        "url": "https://aaai.org/conference/aaai/aaai-26/review-process-update/"
+      }
+    ]
+  },
+  "ijcai/2025": {
+    "accepted": 1021,
+    "submitted": null,
+    "scope": "IJCAI 2025 官方主赛道公开录取名单，合并蒙特利尔和广州后按唯一论文编号统计",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "蒙特利尔主赛道官方录取名单：265 篇",
+        "url": "https://2025.ijcai.org/montreal-main-track-accepted-papers/"
+      },
+      {
+        "label": "广州主赛道官方录取名单：756 篇",
+        "url": "https://2025.ijcai.org/guangzhou-main-track-accepted-papers/"
+      }
+    ]
+  },
+  "ijcai/2026": {
+    "accepted": 694,
+    "submitted": null,
+    "scope": "IJCAI–ECAI 2026 官方主赛道最终公开录取名单",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "IJCAI–ECAI 官方录取名单：主赛道 694 篇",
+        "url": "https://2026.ijcai.org/accepted-papers/?ijtrack=main-track"
+      }
+    ]
+  },
+  "acmmm/2025": {
+    "accepted": 1250,
+    "submitted": 5330,
+    "scope": "ACM MM 2025 主赛道收到的投稿，使用参会单位公布的主赛道统计",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "山东大学参会报告",
+        "url": "https://view.sdu.edu.cn/info/1021/207528.htm"
+      },
+      {
+        "label": "中国石油大学参会报告另有有效投稿口径，未混用",
+        "url": "https://auto.upc.edu.cn/2025/1107/c22126a475913/pagem.htm"
+      }
+    ]
+  },
+  "wacv/2025": {
+    "accepted": 930,
+    "submitted": 2458,
+    "scope": "WACV 2025 主会两轮合计，按组委会手册统计",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "官方议程手册",
+        "url": "https://wacv2025.thecvf.com/wp-content/uploads/2025/02/WACV-2025-Program.pdf"
+      }
+    ]
+  },
+  "wacv/2026": {
+    "accepted": 832,
+    "submitted": 2550,
+    "scope": "WACV 2026 主会两轮合计，按组委会手册统计",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "官方议程手册",
+        "url": "https://media.eventhosts.cc/Conferences/WACV2026/wacv_2026_program_v18_Digital.pdf"
+      }
+    ]
+  },
+  "bmvc/2025": {
+    "accepted": 276,
+    "submitted": 865,
+    "scope": "BMVC 2025 主会，按官方录取公布统计",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "BMVA 官方录取名单与统计",
+        "url": "https://bmvc2025.bmva.org/programme/accepted_papers/"
+      }
+    ]
+  },
+  "bmvc/2026": {
+    "accepted": 406,
+    "submitted": 1448,
+    "scope": "BMVC 2026 主会，采用官方录取页明示的总数",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "BMVA 官方录取名单与统计",
+        "url": "https://bmvc2026.bmva.org/programme/accepted_papers/"
+      }
+    ]
+  },
+  "accv/2026": {
+    "accepted": 373,
+    "submitted": null,
+    "scope": "ACCV 2026 主会，按暂定官方日程中的唯一论文编号计数，口头报告与海报不重复计入",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "官方主会议程及完整录取名单",
+        "url": "https://accv2026.org/conference-program/"
+      }
+    ]
+  },
+  "icassp/2026": {
+    "accepted": 4589,
+    "submitted": null,
+    "scope": "ICASSP 2026 投稿系统公开录取名单，按唯一论文编号计数",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "大会投稿系统公开录取名单",
+        "url": "https://cmsworkshops.com/ICASSP2026/papers/accepted_papers.php"
+      },
+      {
+        "label": "IEEE SPS 组委会访谈给出约 11,200 篇常规投稿，未公布精确分母",
+        "url": "https://signalprocessingsociety.org/index.php/our-story/news-updates/2026/06/meet-icassp-2026-organizers-ana-isabel-perez-neira-and-xavier-mestre"
+      }
+    ]
+  },
+  "icip/2025": {
+    "accepted": 492,
+    "submitted": null,
+    "scope": "ICIP 2025，按会议投稿系统公开录取名单的论文编号计数",
+    "verified_at": "2026-11-18",
+    "sources": [
+      {
+        "label": "会议投稿系统公开录取名单",
+        "url": "https://cmsworkshops.com/ICIP2025/papers/accepted_papers.php"
+      }
+    ]
   }
 }

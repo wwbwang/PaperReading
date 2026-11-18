@@ -124,9 +124,13 @@ def mirror(cache, venue, year, tree):
     for raw in json.loads(content):
         if raw.get("track", "main") not in {"main", "Main"}:
             continue
+        if venue == "siggraph" and raw.get("status") != "Technical Paper":
+            continue
         forum = raw.get("openreview_forum") or raw.get("id", "")
         review_url = raw.get("openreview") or (f"https://openreview.net/forum?id={forum}" if venue in {"iclr", "icml", "neurips"} else "")
         paper_url = raw.get("oa") or raw.get("site") or review_url
+        if venue == "siggraph":
+            paper_url = raw.get("url_paper") or paper_url
         if not paper_url:
             continue
         # An OpenReview submission link alone does not establish acceptance.
@@ -136,6 +140,8 @@ def mirror(cache, venue, year, tree):
         paper.update(abstract=raw.get("abstract") or "", authors=public_author_names(raw.get("author")),
                      keywords=raw.get("keywords") or "", pdf_url=raw.get("pdf") or (f"https://openreview.net/pdf?id={forum}" if review_url else ""),
                      status=raw.get("status") or ("Published" if published else "Unknown"), source="Paper Copilot 公开镜像（未核实官方全量覆盖）")
+        if venue == "siggraph":
+            paper.update(status="Accepted", program_type=raw["status"])
         aliases = str(raw.get("reviewers") or "").split(";") if raw.get("reviewers") else []
         ratings = str(raw["rating"] if raw.get("rating") is not None else "").split(";")
         # A mirror's aggregate rating is never a substitute for individual reviews.
@@ -151,6 +157,54 @@ def mirror(cache, venue, year, tree):
         valid = [n for n in paper["ratings"] if n is not None]
         paper["rating_mean"] = sum(valid) / len(valid) if valid else None
         rows.append(paper)
+    return rows
+
+
+def siggraph_program(cache, year):
+    """Read Technical Papers only; invited TOG presentations/posters are separate."""
+    url = f"https://s{year}.conference-schedule.org/"
+    page = cache.get(url).decode()
+    sources = re.findall(rf'source="(/wp-content/linklings_snippets/wp_program_view_all_{year}-[^"]+)"', page)
+    if not sources:
+        raise ValueError("No public SIGGRAPH daily program found")
+    papers = {}
+    for source in dict.fromkeys(sources):
+        schedule = cache.get(urljoin(url, html.unescape(source))).decode()
+        for identity, block in re.findall(r'<tr\b[^>]*ssid="(papers_\d+)"[^>]*>(.*?)</tr>', schedule, re.S):
+            title = re.search(r'<a[^>]*data-link-type="[^"]+\.presentation"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', block, re.S)
+            if not title or identity in papers:
+                continue
+            paper = base("siggraph", year, identity, title[2], urljoin(url, html.unescape(title[1])))
+            paper.update(status="Accepted", source="SIGGRAPH 官方 Technical Papers 日程",
+                         authors=public_author_names([clean(name) for name in re.findall(
+                             r'<div class="presenter-name"><a[^>]*>(.*?)</a>', block, re.S)]))
+            papers[identity] = paper
+    if not papers:
+        raise ValueError("No SIGGRAPH Technical Papers parsed")
+
+    def detail(paper):
+        try:
+            page = cache.get(paper["paper_url"]).decode()
+            description = re.search(r'<span class="abstract">(.*?)</span></div>', page, re.S)
+            paper["abstract"] = clean(description[1]) if description else ""
+            paper["abstract_source"] = "官方日程 Description（可能是短简介，并非出版全文摘要）"
+            keywords = re.search(r'<div class="keyword tag-group-list[^"\n]*">(.*?)(?=<div class="[^"\n]*tag-group-list|</div></div></span>)', page, re.S)
+            paper["keywords"] = ";".join(clean(v) for v in re.findall(
+                r'<div class="program-track [^"]+">(.*?)</div>', keywords[1], re.S)) if keywords else ""
+            doi = re.search(r'href="https://doi.org/(10\.[^"]+)"', page)
+            if doi:
+                paper.update(program_url=paper["paper_url"], doi=html.unescape(doi[1]).lower(),
+                             paper_url="https://doi.org/" + html.unescape(doi[1]))
+        except Exception as error:
+            paper["abstract_error"] = type(error).__name__
+        return paper
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+        rows = []
+        for i, paper in enumerate(pool.map(detail, papers.values()), 1):
+            rows.append(paper)
+            if i % 100 == 0:
+                print(f"siggraph {year}: official descriptions {i}/{len(papers)}", flush=True)
     return rows
 
 
@@ -433,6 +487,9 @@ def sync_one(venue, year, tree, refresh=False, refresh_sources=False):
                 rows = mirror(cache, venue, year, tree)
                 if rows:
                     meta["source_label"] = "Paper Copilot 公开镜像"
+                elif venue == "siggraph":
+                    rows = siggraph_program(cache, year)
+                    meta["source_label"] = "SIGGRAPH 官方 Technical Papers 日程"
                 elif venue in {"cvpr", "iccv", "wacv", "ntire", "aim"}:
                     rows = cvf(cache, venue, year);meta["source_label"] = "CVF 官方公开论文集"
                     meta["official_coverage_verified"] = True
@@ -446,6 +503,8 @@ def sync_one(venue, year, tree, refresh=False, refresh_sources=False):
             meta["errors"].append(f"{type(error).__name__}: {error}")
         meta.update(status="available" if rows else "unavailable",
                     message="已缓存公开记录；字段覆盖见下方统计。" if rows else "本次尚未取得可核实的公开论文记录；不代表该年份没有论文。")
+    if venue == "siggraph":
+        meta["coverage_note"] = "仅收录 Technical Papers；不含独立 Posters、受邀 TOG 论文展示或 SIGGRAPH Asia。日程 Description 可能为短简介；未核实 Journal / Conference 两轨的完整覆盖，未取得公开审稿评分。"
     unique = {}
     if not rows and previous and previous.get("status") == "available":
         # A failed/empty refresh is not evidence that the previous papers vanished.

@@ -5,11 +5,47 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.paper_venues import VENUES, YEARS, not_held, valid_dataset
-from scripts.sync_library import crossref_paper, cvf, journal, matches_container, sync_one, mirror
+from scripts.sync_library import crossref_paper, cvf, journal, matches_container, sync_one, mirror, siggraph_program
 from scripts.build_library import decision_counts, snapshot, write_json
 
 
 class LibraryTests(unittest.TestCase):
+    def test_siggraph_mirror_does_not_mix_posters_or_invited_tog_presentations(self):
+        class Cache:
+            def get(self, url):
+                return json.dumps([{"id": status, "title": status, "status": status,
+                                    "author": "Alice Li", "url_paper": "https://s2025.conference-schedule.org/presentation/?id=papers_1"}
+                                   for status in ["Technical Paper", "Poster", "TOG Paper"]]).encode()
+        rows = mirror(Cache(), "siggraph", 2025, {"sha": "commit", "paths": {"siggraph/siggraph2025.json"}})
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["status"], "Accepted")
+        self.assertEqual(rows[0]["authors"], ["Alice Li"])
+        self.assertEqual(rows[0]["ratings"], [])
+        self.assertIn("conference-schedule.org", rows[0]["paper_url"])
+
+    def test_siggraph_official_program_deduplicates_and_uses_public_descriptions(self):
+        class Cache:
+            def get(self, url):
+                if "view_all" in url:
+                    row = '<tr ssid="papers_1"><td><a data-link-type="program.papers_1.presentation" href="/presentation/?id=papers_1&amp;sess=sess1">A &amp; B</a><div class="presenter-name"><a>Alice Li</a></div></td></tr>'
+                    return (row + row + '<tr ssid="paperstog_2"><td>Invited TOG</td></tr><tr ssid="pos_3"><td>Poster</td></tr>').encode()
+                if "presentation" in url:
+                    return b'<span class="abstract">Public <b>description</b>.</span></div><div class="keyword tag-group-list tag_group108"><div class="program-track ptrack1">Rendering</div></div></div></span><a href="https://doi.org/10.1145/REAL">Paper</a>'
+                return b'<div source="/wp-content/linklings_snippets/wp_program_view_all_2026-07-20.txt?v=1"></div>'
+        rows = siggraph_program(Cache(), 2026)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["title"], "A & B")
+        self.assertEqual(rows[0]["abstract"], "Public description.")
+        self.assertEqual(rows[0]["keywords"], "Rendering")
+        self.assertEqual(rows[0]["authors"], ["Alice Li"])
+        self.assertIn("id=papers_1&sess=sess1", rows[0]["program_url"])
+        self.assertEqual(rows[0]["paper_url"], "https://doi.org/10.1145/REAL")
+        self.assertEqual(rows[0]["doi"], "10.1145/real")
+        self.assertEqual(rows[0]["ratings"], [])
+
+        with self.assertRaisesRegex(ValueError, "No public SIGGRAPH daily program"):
+            siggraph_program(Cache(), 2027)
+
     def test_missing_mirror_status_requires_publication_evidence(self):
         class Cache:
             def __init__(self, row):
@@ -74,6 +110,13 @@ class LibraryTests(unittest.TestCase):
         self.assertEqual(decision_counts(rows),
                          {"acceptedPaperCount": 3269, "pendingDecisionCount": 0, "totalPaperCount": None})
 
+    def test_verified_partial_statistics_do_not_mix_with_local_counts(self):
+        for accepted, submitted in [(12, None), (None, 100)]:
+            stats = {"accepted": accepted, "submitted": submitted, "sources": [{"url": "https://example.org"}]}
+            counts = decision_counts([{"status": "Accepted"}], stats)
+            self.assertEqual((counts["acceptedPaperCount"], counts["totalPaperCount"]), (accepted, submitted))
+            self.assertEqual(counts["localAcceptedPaperCount"], 1)
+
     def test_verified_statistics_keep_both_counts_separate_from_local_records(self):
         statistics = json.loads((Path(__file__).resolve().parents[1] / "library/conference-statistics.json").read_text())["icml/2025"]
         counts = decision_counts([{"status": "Poster"}, {"status": "Reject"}], statistics)
@@ -99,7 +142,7 @@ class LibraryTests(unittest.TestCase):
             self.assertEqual(json.loads(staged.read_text()), {"different": True})
 
     def test_registry_and_dataset_path_boundary(self):
-        self.assertEqual(len(VENUES), 23)
+        self.assertEqual(len(VENUES), 24)
         self.assertTrue(all(valid_dataset(v, y) for v in VENUES for y in YEARS))
         for venue, year in [("../iclr", 2026), ("unknown", 2026), ("iclr", "2026/../"), ("tip", 2024)]:
             self.assertFalse(valid_dataset(venue, year))
