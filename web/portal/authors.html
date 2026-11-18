@@ -13,16 +13,21 @@
 <body>
   <header class="topbar"><a class="brand" href="/"><span class="brand-icon" aria-hidden="true">P<span>r</span></span>PaperReading</a><nav aria-label="主导航"><a href="/">论文库</a><a href="/authors/" aria-current="page">作者跟踪</a></nav></header>
   <main>
-    <a class="back-link" href="/">← 返回论文库</a>
-    <div class="author-heading"><div><div class="eyebrow">FOLLOW THE RESEARCH</div><h1>作者跟踪</h1></div><label><span class="sr-only">选择作者</span><select id="author-picker" aria-label="选择作者" hidden></select></label></div>
+    <header class="library-intro"><h1>作者跟踪</h1></header>
     <p id="load-status" role="status">正在读取本地作者索引…</p>
-    <div id="author-content" hidden>
-      <section class="author-profile" aria-label="作者档案"><div class="profile-top"><div id="author-avatar" class="avatar" aria-hidden="true"></div><div><h2><span id="author-name"></span><span id="author-name-en" class="name-en"></span></h2><p id="author-affiliation"></p></div><div class="profile-actions"><button id="follow-author" type="button" aria-pressed="true">已关注</button></div></div><div id="author-topics" class="topic-tags"></div><div id="author-links" class="profile-links"></div><details class="coverage-note"><summary id="coverage-summary">数据范围与身份核实规则</summary><p id="identity-note"></p><p>论文仅来自本地 2025–2027 年快照。“已核实”要求本地公开作者名单含目标姓名，并与团队已发表论文目录的标题精确关联；仅姓名相同的记录归入“同名待核实”，不计为该作者成果。团队页面用于身份交叉核对，不用于补全匿名投稿作者，也不覆盖正式来源的年份或录用状态。</p><p id="coverage-gaps"></p><p id="index-updated"></p><p>同一作品在不同会议、期刊或年份出现时保留各自收录记录，数量不等于去重后的作品数。</p></details></section>
+    <div id="author-content" class="author-workspace" hidden>
+      <nav class="author-directory" aria-labelledby="author-directory-title">
+        <div class="directory-heading"><h2 id="author-directory-title">作者名单</h2><span>拖动调整顺序</span></div>
+        <ul id="author-list"></ul>
+        <p id="storage-status" class="state-message" role="status"></p>
+      </nav>
+      <div class="author-main" hidden>
+      <section class="author-profile" aria-label="作者档案"><div class="profile-top"><div id="author-avatar" class="avatar" aria-hidden="true"></div><div><h2><span id="author-name"></span><span id="author-name-en" class="name-en"></span></h2><p id="author-affiliation"></p></div><div class="profile-actions"><button id="follow-author" type="button" aria-pressed="true">已关注</button></div></div><div id="author-topics" class="topic-tags"></div><div id="author-links" class="profile-links"></div></section>
       <form id="author-filters" class="author-filters" role="search" aria-label="筛选作者论文"><label>搜索论文<input type="search" id="author-query" placeholder="在当前作者的论文标题中查找…"></label><label>年份<select id="author-year"><option value="all">全部年份</option><option>2027</option><option>2026</option><option>2025</option></select></label><label>会议 / 期刊<select id="author-venue"><option value="all">全部来源</option></select></label><label>身份核实<select id="identity-filter"><option value="verified">已核实</option><option value="candidate">同名待核实</option><option value="all">全部记录</option></select></label><label class="check-label"><input type="checkbox" id="unread-only">仅看未读</label></form>
-      <p id="storage-status" class="state-message" role="status"></p>
       <div class="results-heading"><p id="paper-count" role="status"></p><button id="mark-visible-read" type="button">将筛选结果标为已读</button></div>
       <div id="author-papers"></div><button id="load-more" class="load-more" type="button" hidden>显示更多</button>
       <p class="small-note">已读和关注状态保存在当前浏览器，不跨设备同步。论文库重建时重新关联作者记录；不会自动抓取匿名作者信息或发送通知。</p>
+      </div>
     </div>
     <footer><span>PaperReading · 作者跟踪</span><p>档案与核实证据保存在本地仓库。<br>来源未公开作者或尚未收录的论文，不会出现在跟踪结果中。</p></footer>
   </main>

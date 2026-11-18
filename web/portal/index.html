@@ -10,21 +10,19 @@
   <script type="module" src="/portal.js"></script>
 </head>
 <body class="portal">
-  <header class="topbar"><a class="brand" href="/"><span class="brand-icon" aria-hidden="true">P<span>r</span></span>PaperReading</a><nav aria-label="主导航"><a href="#library" aria-current="page">论文库</a><a href="/authors/">作者跟踪 ↗</a></nav></header>
+  <header class="topbar"><a class="brand" href="/"><span class="brand-icon" aria-hidden="true">P<span>r</span></span>PaperReading</a><nav aria-label="主导航"><a href="/" aria-current="page">论文库</a><a href="/authors/">作者跟踪</a></nav></header>
   <main>
-    <section class="welcome" aria-labelledby="welcome-title">
-      <div class="intro"><div class="eyebrow">CV / AI · 2025–2027</div><h1 id="welcome-title">从一篇论文，开始探索。</h1><p>浏览会议与期刊，阅读公开审稿，跟进关注作者。</p><nav class="quick-links" aria-label="ICLR 快捷入口"><span>快捷进入</span><a href="/iclr/2027/">ICLR 2027 <span aria-hidden="true">→</span></a><a href="/iclr/2026/">ICLR 2026 <span aria-hidden="true">→</span></a></nav></div>
-      <aside class="tracking-preview" aria-labelledby="tracking-title"><div class="section-heading"><h2 id="tracking-title">关注的作者</h2><a href="/authors/">管理关注 →</a></div><div id="tracked-authors"><p class="muted">正在读取关注作者…</p></div><p class="small-note">仅关联公开作者信息</p></aside>
-    </section>
     <section class="library" id="library" aria-labelledby="library-title">
-      <div class="section-heading library-heading"><div><h2 id="library-title">论文库</h2><span class="section-description">重要程度优先 · 同档 CV 优先</span></div><span id="venue-count" aria-live="polite">__VENUE_COUNT__ 个来源</span></div>
+      <header class="library-intro">
+        <div><h1 id="library-title">论文库</h1><p>计算机视觉与人工智能 · 2025–2027</p></div>
+      </header>
       <div class="library-toolbar"><div class="category-tabs" role="group" aria-label="来源类型"><button type="button" data-kind="all" aria-pressed="true">全部 <span>__VENUE_COUNT__</span></button><button type="button" data-kind="conference" aria-pressed="false">会议 <span>__CONFERENCE_COUNT__</span></button><button type="button" data-kind="journal" aria-pressed="false">期刊 <span>__JOURNAL_COUNT__</span></button><button type="button" data-kind="workshop" aria-pressed="false">Workshop <span>__WORKSHOP_COUNT__</span></button></div><div class="library-controls"><label class="venue-search"><span class="sr-only">按名称查找会议或期刊</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="venue-search" type="search" placeholder="查找会议 / 期刊" autocomplete="off"></label><label><span class="sr-only">年份</span><select id="library-year"><option value="all">全部年份</option><option>2027</option><option>2026</option><option>2025</option></select></label></div></div>
-      <div class="library-context"><p>“核实”为来源统计，“本地”为已收录录取记录；<span>“—”表示总投稿数尚未核实。</span></p><button id="reset-library" type="button" hidden>重置筛选 ×</button></div>
+      <div class="library-context"><p>“核实”为来源统计，“本地”为已收录录取记录。<span>“—”表示总投稿数尚未核实。</span></p><div class="library-context-actions"><span id="venue-count" aria-live="polite">__VENUE_COUNT__ 个来源</span><button id="reset-library" type="button" hidden>重置筛选 ×</button></div></div>
       <div class="venue-grid">__VENUE_CARDS__</div>
       <div id="no-venues" class="empty-state" hidden><strong>未找到匹配的来源</strong><p>试试会议简称，或重置筛选查看全部来源。</p></div>
       <details class="data-guide"><summary>数据范围、统计来源与数量说明</summary><p>会议及 Workshop 按“录取 / 总投稿”展示。“核实”取自下列统计，每届使用来源注明的赛道和口径，未核实的项显示“—”。“本地”的录取数仅统计已收录记录，总投稿数保持“—”。“待定”表示本地尚无已确认录取记录且仍有未决状态。</p><p>论文页中的总数仍为本地已收录条数，可能少于实际投稿数；缺失记录及未公开数据不记为零。“暂未获取”表示当前本地快照没有记录，不代表没有论文。</p>__STATISTICS_SOURCES__</details>
     </section>
-    <footer><span>PaperReading · 本地论文库</span><p>来源：官方论文集、出版机构元数据及标注来源的公开镜像。<br>论文库更新后同步作者跟踪；已读与关注设置保存在当前浏览器。</p></footer>
+    <footer><span>PaperReading · 本地论文库</span><p>来源：官方论文集、出版机构元数据及标注来源的公开镜像。</p></footer>
   </main>
 </body>
 </html>

@@ -3,16 +3,30 @@ export function readingState(authorIds, storage) {
   let saved = {}, available = true;
   try { saved = JSON.parse(storage.getItem("paperreading.authors.v1") || "{}"); }
   catch { available = false; }
-  const followed = new Set(Array.isArray(saved?.followed) ? saved.followed.filter(id => authorIds.includes(id)) : authorIds);
+  // Before the watchlist expanded, Chao Dong was the only default author.
+  const savedFollows = Array.isArray(saved?.followed) ? new Set(saved.followed) : null;
+  const previousAuthors = new Set(Array.isArray(saved?.knownAuthors)
+    ? saved.knownAuthors : ["chao-dong-siat", ...(savedFollows || [])]);
+  const followed = new Set(authorIds.filter(id => !savedFollows || savedFollows.has(id) || !previousAuthors.has(id)));
   const read = new Set(Array.isArray(saved?.read) ? saved.read.filter(key => typeof key === "string") : []);
+  const savedOrder = Array.isArray(saved?.authorOrder) ? saved.authorOrder.filter(id => authorIds.includes(id)) : [];
+  const order = [...new Set([...savedOrder, ...authorIds])];
   function save() {
-    try { storage.setItem("paperreading.authors.v1", JSON.stringify({ followed: [...followed], read: [...read] })); }
+    try { storage.setItem("paperreading.authors.v1", JSON.stringify({ knownAuthors: authorIds, followed: [...followed], read: [...read], authorOrder: order })); }
     catch { available = false; }
     return available;
   }
   return {
     follows: id => followed.has(id),
     isRead: (id, key) => read.has(`${id}:${key}`),
+    get authorOrder() { return [...order]; },
+    moveAuthor(id, position) {
+      const index = order.indexOf(id);
+      if (index < 0 || index === position || !Number.isInteger(position) || position < 0 || position >= order.length) return;
+      order.splice(index, 1);
+      order.splice(position, 0, id);
+      return save();
+    },
     follow(id) { if (!authorIds.includes(id)) return; followed.has(id) ? followed.delete(id) : followed.add(id); return save(); },
     mark(id, keys, value) { for (const key of keys) value ? read.add(`${id}:${key}`) : read.delete(`${id}:${key}`); return save(); },
     get available() { return available; },
